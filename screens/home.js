@@ -25,7 +25,7 @@ const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');
 
 export default function Home({ navigation }) {
     const swiper = useRef(null);
-    const progressValue = useSharedValue(0);
+    const progressValue = 0;
     const baseOptions = {
         vertical: false,
         width: PAGE_WIDTH - 24,
@@ -147,7 +147,7 @@ export default function Home({ navigation }) {
 
 
                     </View>
-                    <View
+                    {/* <View
                         style={{
                             flexDirection: 'row',
                             justifyContent: 'center',
@@ -166,7 +166,7 @@ export default function Home({ navigation }) {
                                 />
                             );
                         })}
-                    </View>
+                    </View> */}
                     <ScrollView
                         style={{
                             height: '100%',
@@ -244,9 +244,9 @@ export default function Home({ navigation }) {
                             }}>
                             <TouchableOpacity
                                 onPress={() =>
-                                    demo === false
-                                        ? navigation.navigate('ViewTradeLicense')
-                                        : setModalVisible(true)
+
+                                    navigation.navigate('ReportAnimal')
+
                                 }>
                                 <MenuBox
                                     image={require('../assets/vet.png')}
@@ -357,57 +357,57 @@ const styles = StyleSheet.create({
 });
 
 
-const PaginationItem = props => {
-    const { animValue, index, length, backgroundColor } = props;
-    const width = 10;
-    const animStyle = useAnimatedStyle(() => {
-        let inputRange = [index - 1, index, index + 1];
-        let outputRange = [-width, 0, width];
+// const PaginationItem = props => {
+//     const { animValue, index, length, backgroundColor } = props;
+//     const width = 10;
+//     const animStyle = useAnimatedStyle(() => {
+//         let inputRange = [index - 1, index, index + 1];
+//         let outputRange = [-width, 0, width];
 
-        if (index === 0 && animValue?.value > length - 1) {
-            inputRange = [length - 1, length, length + 1];
-            outputRange = [-width, 0, width];
-        }
+//         if (index === 0 && animValue?.value > length - 1) {
+//             inputRange = [length - 1, length, length + 1];
+//             outputRange = [-width, 0, width];
+//         }
 
-        return {
-            transform: [
-                {
-                    translateX: interpolate(
-                        animValue?.value,
-                        inputRange,
-                        outputRange,
-                        Extrapolate.CLAMP,
-                    ),
-                },
-            ],
-        };
-    }, [animValue, index, length]);
-    return (
-        <View
-            style={{
-                backgroundColor: 'white',
-                marginHorizontal: 3,
-                width: width,
-                height: width,
-                borderRadius: 50,
-                overflow: 'hidden',
-                transform: [
-                    {
-                        rotateZ: '0deg',
-                    },
-                ],
-            }}>
-            <Animated.View
-                style={[
-                    {
-                        borderRadius: 50,
-                        width: 10,
-                        backgroundColor,
-                        flex: 1,
-                    },
-                    animStyle,
-                ]}
-            />
-        </View>
-    );
-};
+//         return {
+//             transform: [
+//                 {
+//                     translateX: interpolate(
+//                         animValue?.value,
+//                         inputRange,
+//                         outputRange,
+//                         Extrapolate.CLAMP,
+//                     ),
+//                 },
+//             ],
+//         };
+//     }, [animValue, index, length]);
+//     return (
+//         <View
+//             style={{
+//                 backgroundColor: 'white',
+//                 marginHorizontal: 3,
+//                 width: width,
+//                 height: width,
+//                 borderRadius: 50,
+//                 overflow: 'hidden',
+//                 transform: [
+//                     {
+//                         rotateZ: '0deg',
+//                     },
+//                 ],
+//             }}>
+//             <Animated.View
+//                 style={[
+//                     {
+//                         borderRadius: 50,
+//                         width: 10,
+//                         backgroundColor,
+//                         flex: 1,
+//                     },
+//                     animStyle,
+//                 ]}
+//             />
+//         </View>
+//     );
+// };

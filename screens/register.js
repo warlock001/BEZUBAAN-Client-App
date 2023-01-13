@@ -21,7 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Lottie from 'lottie-react-native';
 //import { REACT_APP_BASE_URL } from '@env';
-const REACT_APP_BASE_URL = "http://192.168.0.107:3001";
+const REACT_APP_BASE_URL = "http://192.168.0.104:3001";
 
 const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');
 
@@ -76,6 +76,7 @@ export default function Register({ navigation }) {
                 };
                 _storeData();
                 setModalVisible(true);
+
             })
             .catch(err => {
                 console.log(err);
@@ -152,7 +153,7 @@ export default function Register({ navigation }) {
                         </Text>
                         <Pressable
                             style={[styles.doneButton]}
-                            onPress={() => navigation.goBack()}>
+                            onPress={() => navigation.navigate('Login')}>
                             <Text style={{ color: '#FFF', fontSize: 17, fontWeight: '700' }}>
                                 Done
                             </Text>
@@ -364,6 +365,25 @@ export default function Register({ navigation }) {
                                 Register Now
                             </Text>
                         </TouchableOpacity>
+                        <View style={{ width: '100%', height: 50 }}>
+                            <View
+                                style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+                                <Text style={{ fontSize: 14, fontWeight: '500', paddingRight: 5 }}>
+                                    Already have an account?
+                                </Text>
+                                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                                    <Text
+                                        style={{
+                                            fontSize: 14,
+                                            color: '#CF3339',
+                                            fontWeight: 'bold',
+                                            textDecorationLine: 'underline',
+                                        }}>
+                                        Sign In
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
 
                         <View
                             style={{
@@ -380,7 +400,7 @@ export default function Register({ navigation }) {
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
-        </ScrollView>
+        </ScrollView >
     );
 }
 
