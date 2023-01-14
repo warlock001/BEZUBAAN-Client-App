@@ -13,15 +13,12 @@ import {
     Alert,
     KeyboardAvoidingView,
 } from 'react-native';
-import Camera from '../components/camera';
 export default function ReportAnimal({ navigation }) {
     const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');
     return (
         <ScrollView style={{ height: '100%' }}>
 
             <View>
-                <Camera />
-
 
 
 

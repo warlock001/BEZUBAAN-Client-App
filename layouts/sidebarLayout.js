@@ -27,7 +27,7 @@ const REACT_APP_BASE_URL = "http://192.168.0.107:3001";
 import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics';
 import { formatDistanceStrict } from 'date-fns';
 
-const rnBiometrics = new ReactNativeBiometrics();
+const rnBiometrics = ReactNativeBiometrics;
 
 const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');
 
