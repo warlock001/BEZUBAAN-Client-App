@@ -19,7 +19,8 @@ var ImagePicker = require('react-native-image-picker');
 import TextField from '../components/inputField';
 import React, { useState, useRef, useEffect } from 'react';
 import IntlPhoneInput from 'react-native-international-telephone-input';
-
+import GetLocation from 'react-native-get-location'
+const mime = require('mime');
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
@@ -27,6 +28,7 @@ import axios from 'axios';
 // import ImagePicker from 'react-native-image-crop-picker';
 import LoadingModal from '../components/loadingScreen';
 const REACT_APP_BASE_URL = "http://192.168.100.76:3001";
+
 
 export default function MyAccount({ navigation }) {
   const [firstName, setFirstName] = useState(null);
@@ -38,6 +40,8 @@ export default function MyAccount({ navigation }) {
   //const [photo, setPhoto] = React.useState(null);
   const [photo1, setPhoto1] = React.useState(require('../images/zaby.png'));
 
+
+  const [location, setLocation] = useState('');
   const [data, setData] = useState('');
   const [uri, setUri] = useState('');
   const [fileData, setFileData] = useState('');
@@ -46,7 +50,21 @@ export default function MyAccount({ navigation }) {
 
   var id;
   useFocusEffect(
-    React.useCallback(() => {
+    React.useCallback(async () => {
+
+
+      await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+
+      await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+      );
+
+      await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION,
+      );
+
       getMyStringValue = async () => {
         try {
           id = await AsyncStorage.getItem('@id');
@@ -60,60 +78,30 @@ export default function MyAccount({ navigation }) {
         }
       };
 
-      function getData(ids) {
-        setLoader(false);
 
-        axios({
-          method: 'GET',
-          url: `${REACT_APP_BASE_URL}/alluser?id=${ids}`,
-        })
-          .then(res => {
-            // console.log(res.data);
-            setEmail(res.data.user.email);
-            setFirstName(res.data.user.firstName);
-            setLastName(res.data.user.lastName);
-            setPhoneNumber(res.data.user.mobile);
-            setLoader(false);
-            console.log(res.data.user);
-          })
-          .catch(function (error) {
-            if (error.response) {
-              console.log(error.response.data);
-              console.log(error.response.status);
-              console.log(error.response.headers);
-              setLoader(false);
-              console.log(er.response.data);
-
-              Alert.alert(
-                'Failed',
-                `${er.response.data.message
-                  ? er.response.data.message
-                  : 'Something went wrong'
-                }`,
-                [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-              );
-            }
-          });
-
-        axios({
-          method: 'GET',
-          url: `${REACT_APP_BASE_URL}/files/62d7e93a54bb2686ed633074`,
-        })
-          .then(res => {
-            //setPhoto(res.data);
-            //console.log(`photo: ${photo}`)
-          })
-          .catch(function (error) {
-            if (error.response) {
-              // The request was made and the server responded with a status code
-              // that falls out of the range of 2xx
-              console.log(error.response.data);
-              console.log(error.response.status);
-              console.log(error.response.headers);
-            }
-          });
-      }
       getMyStringValue();
+
+      getLocation = async () => {
+
+        GetLocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+        })
+          .then(location => {
+            console.log(location)
+            setLocation(location)
+          })
+          .catch(error => {
+            const { code, message } = error;
+            console.warn(code, message);
+          })
+
+
+      }
+
+      getLocation()
+
+
     }, []),
   );
 
@@ -138,30 +126,7 @@ export default function MyAccount({ navigation }) {
       );
     }
 
-    // launchImageLibrary(options, response => {
-    //   console.log('Response = ', response);
 
-    //   if (response.didCancel) {
-    //     console.log('User cancelled image picker');
-    //   } else if (response.error) {
-    //     console.log('ImagePicker Error: ', response.error);
-    //   } else if (response.customButton) {
-    //     console.log('User tapped custom button: ', response.customButton);
-    //     alert(response.customButton);
-    //   } else {
-    //     setUri(response.uri);
-    //     const source = response.uri;
-
-    //     // You can also display the image using data:
-    //     // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-    //     // alert(JSON.stringify(response));s
-    //     console.log('response', JSON.stringify(response));
-
-    //     setFilePath(response);
-    //     setFileData(response.data);
-    //     setFileUri(response.assets[0].uri);
-    //   }
-    // });
     ImagePicker.openPicker({
       width: 110,
       height: 110,
@@ -190,6 +155,7 @@ export default function MyAccount({ navigation }) {
 
 
   launchCamera = async () => {
+
     if (Platform.OS === 'android') {
       await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -198,10 +164,13 @@ export default function MyAccount({ navigation }) {
         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
       );
 
+
       await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
       );
     }
+
+
     let options = {
       storageOptions: {
         skipBackup: true,
@@ -221,26 +190,29 @@ export default function MyAccount({ navigation }) {
       } else {
         const source = { uri: response.uri };
         console.log('response', JSON.stringify(response));
-        // this.setState({
-        //   filePath: response,
-        //   fileData: response.data,
-        //   fileUri: response.uri
-        // });
+
         id = await AsyncStorage.getItem('@id');
+        const jwt = await AsyncStorage.getItem('@jwt');
         const form = new FormData();
         form.append('image', {
-          uri: response.uri,
+          uri: response.assets[0].uri,
           name: `${new Date()}_${id}_profilePicture.jpg`,
-          type: 'image/jpg',
+          type: mime.getType(response.assets[0].uri),
         });
-        form.append("user", id)
+        form.append('user', id)
+        form.append('location', JSON.stringify(location))
+        form.append('token', jwt)
         await axios({
+          timeout: 20000,
           method: 'POST',
           url: `${REACT_APP_BASE_URL}/report`,
-          headers: {
-            'content-type': 'multipart/form-data'
-          },
           data: form,
+          headers: {
+            accept: 'application/json',
+            "Content-Type": "multipart/form-data", // add this
+            'x-auth-token': 'eyJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2M2JjNWZlZDM3OTY0ZjlkM2E2M2I5ZWIiLCJyb2xlIjoiY2xpZW50In0.bgUbZk0lKqY65wgSF-JU-_zxmOasQZ9ClTatL-Qtmv4'
+          },
+
         });
 
       }
@@ -299,150 +271,6 @@ export default function MyAccount({ navigation }) {
               <Text style={styles.textStyle2}>My Account</Text>
             </View>
 
-            <SafeAreaView style={{ marginBottom: 20 }}>
-              <Text style={styles.label}>First Name</Text>
-              <TextField
-                editable={false}
-                value={firstName}
-                onChangeText={text => setFirstName(text)}
-                left={
-                  <TextInput.Icon
-                    name={() => (
-                      <Image
-                        resizeMode="contain"
-                        style={{ width: 25 }}
-                        source={require('../images/User1.png')}
-                      />
-                    )}
-                  />
-                }
-              // right={
-              //   <TextInput.Icon
-              //     name={() => (
-              //       <TouchableOpacity>
-              //         <Image source={require('../images/Pencil.png')} />
-              //       </TouchableOpacity>
-              //     )}
-              //   />
-              // }
-              />
-            </SafeAreaView>
-
-            <SafeAreaView style={{ marginBottom: 20 }}>
-              <Text style={styles.label}>Last Name</Text>
-              <TextField
-                editable={false}
-                value={lastName}
-                onChangeText={text => setLastName(text)}
-                left={
-                  <TextInput.Icon
-                    name={() => (
-                      <Image
-                        resizeMode="contain"
-                        style={{ width: 25 }}
-                        source={require('../images/User1.png')}
-                      />
-                    )}
-                  />
-                }
-              // right={
-              //   <TextInput.Icon
-              //     name={() => (
-              //       <TouchableOpacity>
-              //         <Image source={require('../images/Pencil.png')} />
-              //       </TouchableOpacity>
-              //     )}
-              //   />
-              // }
-              />
-            </SafeAreaView>
-
-            <SafeAreaView style={{ marginBottom: 20 }}>
-              <Text style={styles.label}>Email Address</Text>
-
-              <TextField
-                editable={false}
-                value={email}
-                onChangeText={text => setEmail(text)}
-                left={
-                  <TextInput.Icon
-                    name={() => (
-                      <Image
-                        resizeMode="contain"
-                        style={{ width: 25 }}
-                        source={require('../images/EnvelopeClosed.png')}
-                      />
-                    )}
-                  />
-                }
-              // right={
-              //   <TextInput.Icon
-              //     name={() => (
-              //       <TouchableOpacity
-              //         onPress={() => {
-              //           navigation.navigate('UpdateEmail');
-              //         }}>
-              //         <Image source={require('../images/Pencil.png')} />
-              //       </TouchableOpacity>
-              //     )}
-              //   />
-              // }
-              />
-            </SafeAreaView>
-
-            <SafeAreaView style={{ marginBottom: 20 }}>
-              <Text style={[styles.label, { marginBottom: 5 }]}>
-                Phone Number
-              </Text>
-
-              <TextField
-                editable={false}
-                value={phoneNumber}
-                onChangeText={text => setPhoneNumber(text)}
-              // left={<TextInput.Icon name={() => <Text>+92</Text>} />}
-              // right={
-              //   <TextInput.Icon
-              //     name={() => (
-              //       <TouchableOpacity
-              //         onPress={() => {
-              //           navigation.navigate('UpdatePhone');
-              //         }}>
-              //         <Image source={require('../images/Pencil.png')} />
-              //       </TouchableOpacity>
-              //     )}
-              //   />
-              // }
-              />
-            </SafeAreaView>
-
-            {/* <View style={{marginBottom: 20}}>
-            <Text style={styles.label}>Password</Text>
-            <TextField
-              value={'dummypass'}
-              secureTextEntry
-              editable={false}
-              onChangeText={text => setPassword(text)}
-              left={
-                <TextInput.Icon
-                  name={() => (
-                    <Image source={require('../images/Password.png')} />
-                  )}
-                />
-              }
-              right={
-                <TextInput.Icon
-                  name={() => (
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.navigate('UpdatePassword');
-                      }}>
-                      <Image source={require('../images/Pencil.png')} />
-                    </TouchableOpacity>
-                  )}
-                />
-              }
-            />
-          </View> */}
           </ScrollView>
         ) : (
           <LoadingModal />

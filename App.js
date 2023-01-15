@@ -9,24 +9,23 @@ import Register from './screens/register';
 import Home from './screens/home.js';
 import ReportAnimal from './screens/reportAnimal';
 import MyAccount from './screens/myAccount';
+import RescueCenter from './screens/rescueCenter';
 
-function HomeScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-    </View>
-  );
-}
+
 
 const Stack = createNativeStackNavigator();
 
 function App() {
+
+
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="RescueCenter" component={RescueCenter} />
+        <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="ReportAnimal" component={MyAccount} />
 
       </Stack.Navigator>
