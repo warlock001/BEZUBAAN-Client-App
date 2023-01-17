@@ -22,9 +22,10 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+
+        <Stack.Screen name="RescueCenter" component={RescueCenter} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="RescueCenter" component={RescueCenter} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="ReportAnimal" component={MyAccount} />
 
