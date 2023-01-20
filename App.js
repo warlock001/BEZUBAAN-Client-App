@@ -59,7 +59,7 @@ function App() {
   function HomeStack({ route, navigation }) {
     const { shouldRedirect, UserRole } = route.params;
     useEffect(() => {
-      if (shouldRedirect === false) {
+      if (shouldRedirect === true) {
         navigation.dispatch(
           CommonActions.reset({
             index: 1,
