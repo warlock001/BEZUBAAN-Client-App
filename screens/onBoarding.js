@@ -47,7 +47,7 @@ export default function OnBoarding({ navigation }) {
         }>
         <View>
           <ImageBackground
-            source={require('../images/ManSmartphone.jpg')}
+            source={require('../images/onboardingPet1.jpg')}
             style={{ width: '100%', height: '100%' }}>
             <LinearGradient
               colors={['#CF333900', '#CF3339']}
@@ -56,16 +56,16 @@ export default function OnBoarding({ navigation }) {
               end={{ x: 0.5, y: 1.5 }}
             />
             <View style={styles.sectionContainer}>
-              <Text style={styles.titleStyle}>Manage Your</Text>
-              <Text style={styles.titleStyle}>Company with</Text>
-              <Text style={styles.titleStyle}>A Touch on</Text>
+              <Text style={styles.titleStyle}>Save The</Text>
+              <Text style={styles.titleStyle}>Paws Around You</Text>
+              <Text style={styles.titleStyle}>With A Touch On</Text>
               <Text style={styles.titleStyle}>Your Smartphone</Text>
             </View>
           </ImageBackground>
         </View>
         <View>
           <ImageBackground
-            source={require('../images/Notification.png')}
+            source={require('../images/onboardingPet2.jpg')}
             style={{ width: '100%', height: '100%' }}>
             <LinearGradient
               colors={['#CF333900', '#CF3339']}
@@ -74,15 +74,15 @@ export default function OnBoarding({ navigation }) {
               end={{ x: 0.5, y: 1.5 }}
             />
             <View style={styles.sectionContainer}>
-              <Text style={styles.titleStyle}>Receive Notifications</Text>
-              <Text style={styles.titleStyle}>and Updates</Text>
-              <Text style={styles.titleStyle}>in Real Time</Text>
+              <Text style={styles.titleStyle}>Adpot Now!</Text>
+              <Text style={styles.titleStyle}>And Find Youself</Text>
+              <Text style={styles.titleStyle}>A New Friend</Text>
             </View>
           </ImageBackground>
         </View>
         <View>
           <ImageBackground
-            source={require('../images/Document1.png')}
+            source={require('../images/onBoardingPet3.jpeg')}
             style={{ width: '100%', height: '100%' }}>
             <LinearGradient
               colors={['#CF333900', '#CF3339']}
@@ -91,9 +91,9 @@ export default function OnBoarding({ navigation }) {
               end={{ x: 0.5, y: 1.5 }}
             />
             <View style={styles.sectionContainer}>
-              <Text style={styles.titleStyle}>Save and Access</Text>
-              <Text style={styles.titleStyle}>All Your Company</Text>
-              <Text style={styles.titleStyle}>Documents in One Place</Text>
+              <Text style={styles.titleStyle}>Get Access To</Text>
+              <Text style={styles.titleStyle}>The Best Vet</Text>
+              <Text style={styles.titleStyle}>In Your Area</Text>
             </View>
           </ImageBackground>
         </View>
