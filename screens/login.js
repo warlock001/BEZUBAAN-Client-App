@@ -14,7 +14,7 @@ import { TextInput } from 'react-native-paper';
 import TextField from '../components/inputField';
 import axios from 'axios';
 //import { REACT_APP_BASE_URL } from '@env';
-const REACT_APP_BASE_URL = "http://192.168.0.107:3001";
+const REACT_APP_BASE_URL = "http://192.168.0.133:3001";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 export default function SignIn({ navigation }) {
@@ -77,7 +77,7 @@ export default function SignIn({ navigation }) {
                 if (res.role == 'client') {
                     navigation.navigate('Home');
                 } else {
-                    navigation.navigate('RescueCenter');
+                    navigation.navigate('Home');
                 }
             })
             .catch(er => {

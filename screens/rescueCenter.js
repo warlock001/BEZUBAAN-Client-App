@@ -16,7 +16,7 @@ import {
 import { connectToSocket, socket } from '../sockets/socketConfig';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useState, useRef, useEffect } from 'react';
-const REACT_APP_BASE_URL = "http://192.168.0.107:3001";
+const REACT_APP_BASE_URL = "http://192.168.0.133:3001";
 
 export default function RescueCenter({ navigation }) {
     const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');

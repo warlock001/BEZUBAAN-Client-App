@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-export const socket = io('http://192.168.0.107:3001', {
+export const socket = io('http://192.168.0.133:3001', {
   transports: ['websocket'], // you need to explicitly tell it to use websockets
   extraHeaders: {
     role: 'client',
