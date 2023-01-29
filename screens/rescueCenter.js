@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontWeight: 'bold',
         marginBottom: 15,
-    }
+    },
     container: {
         flex: 1,
         marginTop: 20,
