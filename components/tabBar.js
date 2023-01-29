@@ -7,12 +7,12 @@ import {
   Animated,
   Easing,
 } from 'react-native';
-import React, {useEffect} from 'react';
-import {useSelector} from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 
-export default function MyTabBar({state, descriptors, navigation}) {
+export default function MyTabBar({ state, descriptors, navigation }) {
   var upValue = React.useRef(new Animated.Value(0.1)).current;
-  const {sidebar} = useSelector(state => state.sidebar);
+  const { sidebar } = useSelector(state => state.sidebar);
 
   moveUD = () => {
     Animated.timing(upValue, {
@@ -41,10 +41,10 @@ export default function MyTabBar({state, descriptors, navigation}) {
         bottom: -42,
         left: 0,
         width: '100%',
-        transform: [{translateY: upValue}],
+        transform: [{ translateY: upValue }],
         zIndex: 20,
       }}>
-      <View style={{paddingHorizontal: 24, zIndex: 1}}>
+      <View style={{ paddingHorizontal: 24, zIndex: 1 }}>
         <View
           style={{
             position: 'absolute',
@@ -62,13 +62,13 @@ export default function MyTabBar({state, descriptors, navigation}) {
             paddingHorizontal: 25,
           }}>
           {state.routes.map((route, index) => {
-            const {options} = descriptors[route.key];
+            const { options } = descriptors[route.key];
             const label =
               options.tabBarLabel !== undefined
                 ? options.tabBarLabel
                 : options.title !== undefined
-                ? options.title
-                : route.name;
+                  ? options.title
+                  : route.name;
             const icon = options.tabBarIcon;
             console.log(icon);
             const isFocused = state.index === index;

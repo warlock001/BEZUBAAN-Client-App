@@ -27,7 +27,7 @@ import axios from 'axios';
 // import SidebarLayout from '../layouts/sidebarLayout';
 // import ImagePicker from 'react-native-image-crop-picker';
 import LoadingModal from '../components/loadingScreen';
-const REACT_APP_BASE_URL = "http://192.168.0.133:3001";
+const REACT_APP_BASE_URL = "http://192.168.100.76:3001";
 
 
 export default function MyAccount({ navigation }) {
@@ -69,10 +69,6 @@ export default function MyAccount({ navigation }) {
         try {
           id = await AsyncStorage.getItem('@id');
           console.log(id);
-          if (id) {
-            getData(id);
-          } else {
-          }
         } catch (e) {
           console.log(e);
         }

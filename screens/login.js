@@ -14,8 +14,9 @@ import { TextInput } from 'react-native-paper';
 import TextField from '../components/inputField';
 import axios from 'axios';
 //import { REACT_APP_BASE_URL } from '@env';
-const REACT_APP_BASE_URL = "http://192.168.0.133:3001";
+const REACT_APP_BASE_URL = "http://192.168.100.76:3001";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LinearGradient from 'react-native-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 export default function SignIn({ navigation }) {
     const [email, setEmail] = useState(null);
@@ -53,11 +54,6 @@ export default function SignIn({ navigation }) {
 
     function signIn() {
 
-
-
-
-
-
         console.log(REACT_APP_BASE_URL);
         setLoader(true)
         axios({
@@ -73,8 +69,9 @@ export default function SignIn({ navigation }) {
                 console.log(res.data);
                 await AsyncStorage.setItem('@id', res.data._id);
                 await AsyncStorage.setItem('@jwt', res.data.token);
+                await AsyncStorage.setItem('@role', res.data.role);
                 setLoader(false)
-                if (res.role == 'client') {
+                if (res.data.role == 'client') {
                     navigation.navigate('Home');
                 } else {
                     navigation.navigate('Home');
@@ -98,8 +95,14 @@ export default function SignIn({ navigation }) {
             {!loader ? (
                 <View style={{ height: '100%' }}>
                     <ImageBackground
-                        source={require('../images/signIn.png')}
+                        source={require('../images/onBoardingPet3.jpeg')}
                         style={{ width: '100%', height: 250 }}>
+                        <LinearGradient
+                            colors={['#CF333900', '#CF3339']}
+                            style={styles.gradientStyle}
+                            start={{ x: 0.5, y: 0.5 }}
+                            end={{ x: 0.5, y: 1.5 }}
+                        />
                         <View style={styles.topheader}>
                             <View style={styles.textView}>
                                 <Text style={styles.textStyle}>Sign In</Text>
@@ -230,6 +233,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#f1f1f1',
         height: '100%',
         width: '100%',
+    },
+    gradientStyle: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
     },
     forgotButtonStyle: {
         fontSize: 10,
