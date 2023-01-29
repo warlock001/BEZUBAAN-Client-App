@@ -4,6 +4,7 @@ import {
     Text,
     Image,
     ScrollView,
+    FlatList,
     View,
     SafeAreaView,
     TouchableOpacity,
@@ -21,17 +22,84 @@ import { TextInput } from 'react-native-paper';
 const REACT_APP_BASE_URL = "http://192.168.100.76:3001";
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { set } from 'date-fns';
 export default function RescueCenter({ navigation }) {
     const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');
     const [modalVisible, setModalVisible] = useState(false);
     const [ETAmodalVisible, setETAModalVisible] = useState(false);
     const [rescueLocation, setRescueLocation] = useState(0);
+    const [selectedId, setSelectedId] = useState();
     const [reportId, setReportId] = useState(0);
     const [ETA, setETA] = useState(0);
+    const [data, setData] = useState(0);
+    const [JWT, setJWT] = useState(0);
+    const [ID, setID] = useState();
+    const DATA = [
+        {
+            id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+            title: 'First Item',
+        },
+        {
+            id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+            title: 'Second Item',
+        },
+        {
+            id: '58694a0f-3da1-471f-bd96-145571e29d72',
+            title: 'Third Item',
+        },
+    ];
+
+    const Item = ({ item, onPress, backgroundColor, textColor }) => (
+        <TouchableOpacity onPress={onPress} style={[styles.item, { backgroundColor }]}>
+            <Text style={[styles.title, { color: textColor }]}>{item.title}</Text>
+        </TouchableOpacity>
+    );
+
+
+    const renderItems = ({ item }) => {
+        const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
+        const color = item.id === selectedId ? 'white' : 'black';
+
+        return (
+            <Item
+                item={item}
+                onPress={() => setSelectedId(item.id)}
+                backgroundColor={backgroundColor}
+                textColor={color}
+            />
+        );
+    };
+
+
+
+
+    function fetchData(id, jwt) {
+        axios({
+            timeout: 20000,
+            method: 'GET',
+            url: `${REACT_APP_BASE_URL}/report?id=${id}`,
+            headers: {
+                'x-auth-token': jwt,
+            },
+        })
+            .then(async res => {
+                setData(res.data)
+                console.log(res.data)
+            })
+            .catch(er => {
+                console.log(er.response.data)
+
+                Alert.alert('Failed', `${er.response.data.message ? er.response.data.message : "Something went wrong"}`, [
+                    { text: 'OK', onPress: () => console.log('OK Pressed') },
+                ]);
+            }
+            );
+    }
+
+
 
     useFocusEffect(
         React.useCallback(() => {
-
 
             connectSocket = async () => {
                 connectToSocket();
@@ -45,6 +113,13 @@ export default function RescueCenter({ navigation }) {
                 setReportId(arg.reportId)
                 setModalVisible(true)
             });
+
+            fetchAllRecord = async () => {
+                const id = await AsyncStorage.getItem('@id');
+                const jwt = await AsyncStorage.getItem('@jwt');
+                fetchData(id, jwt);
+            }
+
 
         })
     );
@@ -77,6 +152,9 @@ export default function RescueCenter({ navigation }) {
     }
 
     async function updateETA() {
+
+
+
         const id = await AsyncStorage.getItem('@id');
         const jwt = await AsyncStorage.getItem('@jwt');
         axios({
@@ -87,6 +165,7 @@ export default function RescueCenter({ navigation }) {
                 'x-auth-token': jwt,
             },
             data: {
+                rescuer: id,
                 ETA: ETA,
             },
         })
@@ -189,6 +268,16 @@ export default function RescueCenter({ navigation }) {
                     </View>
                 </View>
             </Modal>
+
+            <SafeAreaView>
+                <FlatList
+                    data={data}
+                    renderItem={renderItems}
+                    keyExtractor={item => item.id}
+                    extraData={selectedId}
+                />
+            </SafeAreaView>
+
         </View>
     );
 };
@@ -240,5 +329,17 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontWeight: 'bold',
         marginBottom: 15,
-    }
+    },
+    container: {
+        flex: 1,
+        marginTop: 20,
+    },
+    item: {
+        padding: 20,
+        marginVertical: 8,
+        marginHorizontal: 16,
+    },
+    title: {
+        fontSize: 32,
+    },
 });
