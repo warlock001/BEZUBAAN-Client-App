@@ -19,9 +19,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useState, useRef, useEffect } from 'react';
 import TextField from '../components/inputField';
 import { TextInput } from 'react-native-paper';
-const REACT_APP_BASE_URL = "http://192.168.100.76:3001";
+const REACT_APP_BASE_URL = "http://192.168.0.103:3001";
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import call from 'react-native-phone-call';
 import { set } from 'date-fns';
 export default function RescueCenter({ navigation }) {
     const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');
@@ -31,39 +32,103 @@ export default function RescueCenter({ navigation }) {
     const [selectedId, setSelectedId] = useState();
     const [reportId, setReportId] = useState(0);
     const [ETA, setETA] = useState(0);
-    const [data, setData] = useState(0);
+    const [Data, setData] = useState([
+        {
+            "_id": "63d7021a347f94159a1ea8dd",
+            "user": {
+                "_id": "63c5cdfe2b439f2426dc36d8",
+                "firstName": "Zabloon",
+                "lastName": "Albert",
+                "email": "zabloona@gmail.com",
+                "dialCode": "+92",
+                "mobile": "3062925548",
+                "role": "user",
+                "isVerified": false,
+                "profilePicture": [],
+                "__v": 0
+            },
+            "location": "{\"bearing\":0,\"time\":1675034680085,\"speed\":0,\"accuracy\":5,\"longitude\":-122.084,\"latitude\":37.4219983,\"altitude\":5,\"provider\":\"fused\"}",
+            "status": "On Going",
+            "file": "63d7021a347f94159a1ea8db",
+            "createdAt": "2023-01-29T23:32:42.609Z",
+            "updatedAt": "2023-01-29T23:32:52.336Z",
+            "__v": 0,
+            "rescuer": "63c5cc652b439f2426dc36d0",
+            "ETA": "50"
+        },
+        {
+            "_id": "63d7173fb9636c048a5c8523",
+            "user": {
+                "_id": "63c5cdfe2b439f2426dc36d8",
+                "firstName": "Zabloon",
+                "lastName": "Albert",
+                "email": "zabloona@gmail.com",
+                "dialCode": "+92",
+                "mobile": "3062925548",
+                "role": "user",
+                "isVerified": false,
+                "profilePicture": [],
+                "__v": 0
+            },
+            "location": "{\"bearing\":0,\"time\":1675034680085,\"speed\":0,\"accuracy\":5,\"longitude\":-122.084,\"latitude\":37.4219983,\"altitude\":5,\"provider\":\"fused\"}",
+            "status": "On Going",
+            "file": "63d7173fb9636c048a5c8521",
+            "createdAt": "2023-01-30T01:02:55.571Z",
+            "updatedAt": "2023-01-30T01:03:04.794Z",
+            "__v": 0,
+            "rescuer": "63c5cc652b439f2426dc36d0",
+            "ETA": "20"
+        }
+    ]);
     const [JWT, setJWT] = useState(0);
     const [ID, setID] = useState();
-    const DATA = [
-        {
-            id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-            title: 'First Item',
-        },
-        {
-            id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-            title: 'Second Item',
-        },
-        {
-            id: '58694a0f-3da1-471f-bd96-145571e29d72',
-            title: 'Third Item',
-        },
-    ];
 
-    const Item = ({ item, onPress, backgroundColor, textColor }) => (
-        <TouchableOpacity onPress={onPress} style={[styles.item, { backgroundColor }]}>
-            <Text style={[styles.title, { color: textColor }]}>{item.title}</Text>
-        </TouchableOpacity>
-    );
+
+    const Item = ({ item, onPress, backgroundColor, textColor }) => {
+        let date = new Date(item.createdAt)
+        console.log(date)
+        const [location, setlocation] = useState();
+
+        const triggerCall = () => {
+            // Check for perfect 10 digit length
+            if (inputValue.length != 10) {
+                alert('Please insert correct contact number');
+                return;
+            }
+
+            const args = {
+                number: item.user.mobile,
+                prompt: true,
+            };
+            // Make a call
+            call(args).catch(console.error);
+        };
+
+        useEffect(async () => {
+
+            var loc = JSON.parse(item.location)
+            const Location = await axios.get(`https://us1.locationiq.com/v1/reverse?key=pk.8a577d1b155ce4938bc3dbe2b851c181&lat=${loc.latitude}&lon=${loc.longitude}&format=json`);
+            setlocation(Location.data.display_name)
+        }, [])
+        return (
+            <TouchableOpacity onPress={onPress} style={[styles.item, { backgroundColor }]}>
+                <Text style={[styles.title, { color: textColor }]}>{date.toLocaleString()}</Text>
+                <Text style={[styles.title, { color: textColor }]}>{location}</Text>
+                <View><TouchableOpacity><Text>Call</Text></TouchableOpacity></View>
+            </TouchableOpacity>
+        )
+    };
 
 
     const renderItems = ({ item }) => {
-        const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
-        const color = item.id === selectedId ? 'white' : 'black';
+        // console.log(item)
+        const backgroundColor = item._id === selectedId ? '#6e3b6e' : '#f9c2ff';
+        const color = item._id === selectedId ? 'white' : 'black';
 
         return (
             <Item
                 item={item}
-                onPress={() => setSelectedId(item.id)}
+                onPress={() => setSelectedId(item._id)}
                 backgroundColor={backgroundColor}
                 textColor={color}
             />
@@ -83,8 +148,8 @@ export default function RescueCenter({ navigation }) {
             },
         })
             .then(async res => {
-                setData(res.data)
-                console.log(res.data)
+                // setData(res.data.report);
+                console.log(res.data.report)
             })
             .catch(er => {
                 console.log(er.response.data)
@@ -92,10 +157,21 @@ export default function RescueCenter({ navigation }) {
                 Alert.alert('Failed', `${er.response.data.message ? er.response.data.message : "Something went wrong"}`, [
                     { text: 'OK', onPress: () => console.log('OK Pressed') },
                 ]);
-            }
-            );
+            });
     }
 
+
+    useEffect(() => {
+        fetchAllRecord = async () => {
+            const id = await AsyncStorage.getItem('@id');
+            const jwt = await AsyncStorage.getItem('@jwt');
+            console.log("the id id" + id)
+            fetchData(id, jwt);
+        };
+
+        fetchAllRecord()
+
+    }, [])
 
 
     useFocusEffect(
@@ -114,11 +190,6 @@ export default function RescueCenter({ navigation }) {
                 setModalVisible(true)
             });
 
-            fetchAllRecord = async () => {
-                const id = await AsyncStorage.getItem('@id');
-                const jwt = await AsyncStorage.getItem('@jwt');
-                fetchData(id, jwt);
-            }
 
 
         })
@@ -270,10 +341,11 @@ export default function RescueCenter({ navigation }) {
             </Modal>
 
             <SafeAreaView>
+                {/* <Text>{Data}</Text> */}
                 <FlatList
-                    data={data}
-                    renderItem={renderItems}
-                    keyExtractor={item => item.id}
+                    data={Data}
+                    renderItem={item => renderItems(item)}
+                    keyExtractor={item => item._id}
                     extraData={selectedId}
                 />
             </SafeAreaView>
