@@ -21,7 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Lottie from 'lottie-react-native';
 //import { REACT_APP_BASE_URL } from '@env';
-const REACT_APP_BASE_URL = "http://192.168.0.103:3001";
+const REACT_APP_BASE_URL = "http://192.168.100.76:3001";
 
 const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');
 

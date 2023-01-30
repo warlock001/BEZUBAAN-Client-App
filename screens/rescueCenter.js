@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     Modal,
     Dimensions,
+    Linking,
     Pressable,
     Alert,
     KeyboardAvoidingView,
@@ -19,11 +20,12 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useState, useRef, useEffect } from 'react';
 import TextField from '../components/inputField';
 import { TextInput } from 'react-native-paper';
-const REACT_APP_BASE_URL = "http://192.168.0.103:3001";
+const REACT_APP_BASE_URL = "http://192.168.100.76:3001";
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import call from 'react-native-phone-call';
 import { set } from 'date-fns';
+import getDirections from 'react-native-google-maps-directions'
 export default function RescueCenter({ navigation }) {
     const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');
     const [modalVisible, setModalVisible] = useState(false);
@@ -32,54 +34,9 @@ export default function RescueCenter({ navigation }) {
     const [selectedId, setSelectedId] = useState();
     const [reportId, setReportId] = useState(0);
     const [ETA, setETA] = useState(0);
-    const [Data, setData] = useState([
-        {
-            "_id": "63d7021a347f94159a1ea8dd",
-            "user": {
-                "_id": "63c5cdfe2b439f2426dc36d8",
-                "firstName": "Zabloon",
-                "lastName": "Albert",
-                "email": "zabloona@gmail.com",
-                "dialCode": "+92",
-                "mobile": "3062925548",
-                "role": "user",
-                "isVerified": false,
-                "profilePicture": [],
-                "__v": 0
-            },
-            "location": "{\"bearing\":0,\"time\":1675034680085,\"speed\":0,\"accuracy\":5,\"longitude\":-122.084,\"latitude\":37.4219983,\"altitude\":5,\"provider\":\"fused\"}",
-            "status": "On Going",
-            "file": "63d7021a347f94159a1ea8db",
-            "createdAt": "2023-01-29T23:32:42.609Z",
-            "updatedAt": "2023-01-29T23:32:52.336Z",
-            "__v": 0,
-            "rescuer": "63c5cc652b439f2426dc36d0",
-            "ETA": "50"
-        },
-        {
-            "_id": "63d7173fb9636c048a5c8523",
-            "user": {
-                "_id": "63c5cdfe2b439f2426dc36d8",
-                "firstName": "Zabloon",
-                "lastName": "Albert",
-                "email": "zabloona@gmail.com",
-                "dialCode": "+92",
-                "mobile": "3062925548",
-                "role": "user",
-                "isVerified": false,
-                "profilePicture": [],
-                "__v": 0
-            },
-            "location": "{\"bearing\":0,\"time\":1675034680085,\"speed\":0,\"accuracy\":5,\"longitude\":-122.084,\"latitude\":37.4219983,\"altitude\":5,\"provider\":\"fused\"}",
-            "status": "On Going",
-            "file": "63d7173fb9636c048a5c8521",
-            "createdAt": "2023-01-30T01:02:55.571Z",
-            "updatedAt": "2023-01-30T01:03:04.794Z",
-            "__v": 0,
-            "rescuer": "63c5cc652b439f2426dc36d0",
-            "ETA": "20"
-        }
-    ]);
+    const [Data, setData] = useState([]);
+
+
     const [JWT, setJWT] = useState(0);
     const [ID, setID] = useState();
 
@@ -88,33 +45,67 @@ export default function RescueCenter({ navigation }) {
         let date = new Date(item.createdAt)
         console.log(date)
         const [location, setlocation] = useState();
-
-        const triggerCall = () => {
-            // Check for perfect 10 digit length
-            if (inputValue.length != 10) {
-                alert('Please insert correct contact number');
-                return;
+        handleGetDirections = () => {
+            const data = {
+                source: {
+                    latitude: -33.8356372,
+                    longitude: 18.6947617
+                },
+                destination: {
+                    latitude: -33.8600024,
+                    longitude: 18.697459
+                },
+                params: [
+                    {
+                        key: "travelmode",
+                        value: "driving"        // may be "walking", "bicycling" or "transit" as well
+                    },
+                    {
+                        key: "dir_action",
+                        value: "navigate"       // this instantly initializes navigation using the given travel mode
+                    }
+                ],
+                waypoints: [
+                    {
+                        latitude: -33.8600025,
+                        longitude: 18.697452
+                    },
+                    {
+                        latitude: -33.8600026,
+                        longitude: 18.697453
+                    },
+                    {
+                        latitude: -33.8600036,
+                        longitude: 18.697493
+                    }
+                ]
             }
 
-            const args = {
-                number: item.user.mobile,
-                prompt: true,
-            };
-            // Make a call
-            call(args).catch(console.error);
-        };
+            getDirections(data)
+        }
 
-        useEffect(async () => {
 
-            var loc = JSON.parse(item.location)
-            const Location = await axios.get(`https://us1.locationiq.com/v1/reverse?key=pk.8a577d1b155ce4938bc3dbe2b851c181&lat=${loc.latitude}&lon=${loc.longitude}&format=json`);
-            setlocation(Location.data.display_name)
+        useEffect(() => {
+            async function fetchLocation() {
+                var loc = JSON.parse(item.location)
+                const Location = await axios.get(`https://us1.locationiq.com/v1/reverse?key=pk.8a577d1b155ce4938bc3dbe2b851c181&lat=${loc.latitude}&lon=${loc.longitude}&format=json`);
+                setlocation(Location.data.display_name)
+
+            }
+            fetchLocation()
         }, [])
         return (
             <TouchableOpacity onPress={onPress} style={[styles.item, { backgroundColor }]}>
                 <Text style={[styles.title, { color: textColor }]}>{date.toLocaleString()}</Text>
                 <Text style={[styles.title, { color: textColor }]}>{location}</Text>
-                <View><TouchableOpacity><Text>Call</Text></TouchableOpacity></View>
+                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
+                    <TouchableOpacity onPress={() => {
+                        Linking.openURL('tel://' + item.user.dialCode + item.user.mobile).then(() => null).catch(() => null);
+                    }}><Text>Call</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        Linking.openURL('https://www.google.com/maps/dir/?api=1&travelmode=driving&dir_action=navigate&destination=-33.8600024%2C18.697459&origin=-33.8356372%2C18.6947617')
+                    }}><Text>Get Direction</Text></TouchableOpacity>
+                    <TouchableOpacity ><Text>Mark Done</Text></TouchableOpacity></View>
             </TouchableOpacity>
         )
     };
@@ -148,7 +139,7 @@ export default function RescueCenter({ navigation }) {
             },
         })
             .then(async res => {
-                // setData(res.data.report);
+                setData(res.data.report);
                 console.log(res.data.report)
             })
             .catch(er => {

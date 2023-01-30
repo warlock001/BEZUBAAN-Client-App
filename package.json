@@ -25,6 +25,7 @@
     "react-native-biometrics": "^3.0.1",
     "react-native-gesture-handler": "^2.8.0",
     "react-native-get-location": "^2.2.1",
+    "react-native-google-maps-directions": "^2.1.1",
     "react-native-image-crop-picker": "^0.34.1",
     "react-native-image-picker": "^5.0.0",
     "react-native-international-telephone-input": "^0.0.2",
