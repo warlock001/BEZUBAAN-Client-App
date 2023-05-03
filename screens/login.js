@@ -14,7 +14,7 @@ import { TextInput } from 'react-native-paper';
 import TextField from '../components/inputField';
 import axios from 'axios';
 //import { REACT_APP_BASE_URL } from '@env';
-const REACT_APP_BASE_URL = "http://192.168.100.76:3001";
+const REACT_APP_BASE_URL = "http://192.168.0.107:3001";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
@@ -71,7 +71,7 @@ export default function SignIn({ navigation }) {
                 await AsyncStorage.setItem('@jwt', res.data.token);
                 await AsyncStorage.setItem('@role', res.data.role);
                 setLoader(false)
-                if (res.data.role == 'user') {
+                if (res.data.role == 'client') {
                     navigation.navigate('Home');
                 } else {
                     navigation.navigate('RescueCenter');
@@ -126,7 +126,8 @@ export default function SignIn({ navigation }) {
                                     left={
                                         <TextInput.Icon
                                             name={() => (
-                                                <Image source={require('../images/EnvelopeClosed.png')} />
+                                                <Image  resizeMode="contain"
+                                                style={{ width: 25 }} source={require('../images/EnvelopeClosed.png')} />
                                             )}
                                         />
                                     }
@@ -146,7 +147,8 @@ export default function SignIn({ navigation }) {
                                     left={
                                         <TextInput.Icon
                                             name={() => (
-                                                <Image source={require('../images/Password.png')} />
+                                                <Image  resizeMode="contain"
+                                                style={{ width: 25 }} source={require('../images/password_icon.png')} />
                                             )}
                                         />
                                     }
@@ -154,7 +156,8 @@ export default function SignIn({ navigation }) {
                                         <TextInput.Icon
                                             name={() => (
                                                 <TouchableOpacity>
-                                                    <Image source={require('../images/Hide.png')} />
+                                                    <Image resizeMode="contain"
+                                                style={{ width: 25 }} source={require('../images/Hide.png')} />
                                                 </TouchableOpacity>
                                             )}
                                         />

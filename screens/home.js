@@ -299,11 +299,11 @@ export default function Home({ navigation }) {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => navigation.navigate('BusinessSupportServices')}>
+                                onPress={() => navigation.navigate('Adopt')}>
                                 <MenuBox
-                                    image={require('../images/team.png')}
+                                    image={require('../images/house.png')}
                                     PAGE_WIDTH={PAGE_WIDTH}
-                                    title="Business Support"
+                                    title="Adopt a paw"
                                 />
                             </TouchableOpacity>
                             <TouchableOpacity
