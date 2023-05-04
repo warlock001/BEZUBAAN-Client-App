@@ -12,6 +12,7 @@ import {
   Pressable,
   Alert,
   KeyboardAvoidingView,
+  PermissionsAndroid,
 } from 'react-native';
 import {TextInput} from 'react-native-paper';
 import TextField from '../components/inputField';
@@ -23,72 +24,117 @@ import Lottie from 'lottie-react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import SelectBox from '../components/selectBox';
 const REACT_APP_BASE_URL = 'http://192.168.0.107:3001';
-
+import {launchImageLibrary} from 'react-native-image-picker';
 const {width: PAGE_WIDTH, height: PAGE_HEIGHT} = Dimensions.get('window');
+const mime = require('mime');
 
 export default function AdoptionPostForm({navigation}) {
-  const [firstName, setFirstName] = useState(null);
-  const [lastName, setLastName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [dialCode, setDialCode] = useState(false);
+  const [petType, setPetType] = useState('');
+  const [breed, setBreed] = useState('');
+  const [age, setAge] = useState('');
+  const [color, setColor] = useState('');
+  const [petDescription, setPetDescription] = useState('');
+  const [phone, setPhone] = useState(null);
+  const [dialCode, setDialCode] = useState('');
+  const [image, setImage] = useState('');
+  const [imageName, setImageName] = useState('Choose an image');
   const [modalVisible, setModalVisible] = useState(false);
+
   const petTypes = ['Dog', 'Bird', 'Cat', 'Fish'];
-  function sendData() {
-    console.log({
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      mobile: phoneNumber,
-      dialCode: dialCode,
-      isVerified: false,
-      role: 'client',
-      password: password,
-      confirmPassword: confirmPassword,
-    });
-    axios({
-      method: 'POST',
-      url: `${REACT_APP_BASE_URL}/signup`,
-      data: {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        mobile: phoneNumber,
-        dialCode: dialCode,
-        isVerified: false,
-        role: 'client',
-        password: password,
-        confirmPassword: confirmPassword,
+
+  const chooseImage = async () => {
+    if (Platform.OS === 'android') {
+      await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      );
+      await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      );
+
+      await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
+    }
+
+    let options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
       },
-    })
-      .then(res => {
-        console.log(res.message);
-        const _storeData = async () => {
-          try {
-            setModalVisible(true);
-          } catch (error) {
-            console.log(error);
-          }
-        };
-        _storeData();
-        setModalVisible(true);
-      })
-      .catch(err => {
-        console.log(err);
-        Alert.alert('', 'Email already registered', [
-          {text: 'OK', onPress: () => console.log('OK Pressed')},
-        ]);
-      });
-    if (firstName && lastName && email && phoneNumber) {
-      setModalVisible(true);
-    } else {
+    };
+    launchImageLibrary(options, async response => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+        alert(response.customButton);
+      } else {
+        setImageName(response.assets[0].uri);
+        setImage({
+          uri: response.assets[0].uri,
+          name: `${new Date()}_profilePicture.jpg`,
+          type: mime.getType(response.assets[0].uri),
+        });
+      }
+    });
+  };
+
+  async function sendData() {
+    console.log({
+      petType: petType,
+      breed: breed,
+      age: age,
+      color: color,
+      petDescription: petDescription,
+      phone: phone,
+      dialCode: dialCode,
+    });
+
+    if (!petType || !breed || !color || !petDescription || !phone || !image) {
       Alert.alert('', 'Please fill in All the required details.', [
         {text: 'OK', onPress: () => console.log('OK Pressed')},
       ]);
+    } else {
+      id = await AsyncStorage.getItem('@id');
+      const form = new FormData();
+      form.append('image', image);
+      form.append('petType', petType);
+      form.append('breed', breed);
+      form.append('age', age);
+      form.append('color', color);
+      form.append('petDescription', petDescription);
+      form.append('dialCode', dialCode);
+      form.append('phone', phone);
+      form.append('id', id);
+      axios({
+        method: 'POST',
+        url: `${REACT_APP_BASE_URL}/adoption`,
+        data: form,
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'multipart/form-data', // add this
+          'x-auth-token':
+            'eyJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2M2JjNWZlZDM3OTY0ZjlkM2E2M2I5ZWIiLCJyb2xlIjoiY2xpZW50In0.bgUbZk0lKqY65wgSF-JU-_zxmOasQZ9ClTatL-Qtmv4',
+        },
+      })
+        .then(res => {
+          console.log(res.message);
+          setModalVisible(true);
+          setPetType('');
+          setBreed('');
+          setAge('');
+          setColor('');
+          setPetDescription('');
+          setPhone('');
+        })
+        .catch(err => {
+          console.log(err);
+          Alert.alert('', 'Unknown Error Occured', [
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ]);
+        });
     }
   }
 
@@ -176,7 +222,89 @@ export default function AdoptionPostForm({navigation}) {
                 data={petTypes}
                 defaultButtonText="Select Pet Type"
                 onSelect={(selectedItem, index) => {
-                  console.log(selectedItem);
+                  setPetType(selectedItem);
+                }}
+              />
+            </SafeAreaView>
+
+            <SafeAreaView style={{marginBottom: 20}}>
+              <TextField
+                label="Bread"
+                onChangeText={text => setBreed(text)}
+                value={breed}
+                left={
+                  <TextInput.Icon
+                    name={() => (
+                      <Image
+                        resizeMode="contain"
+                        style={{width: 25}}
+                        source={require('../images/password_icon.png')}
+                      />
+                    )}
+                  />
+                }
+              />
+            </SafeAreaView>
+
+            <SafeAreaView style={{marginBottom: 20}}>
+              <TextField
+                label="Age"
+                keyboardType="numeric"
+                onChangeText={text => setAge(text)}
+                value={age}
+                left={
+                  <TextInput.Icon
+                    name={() => (
+                      <Image
+                        resizeMode="contain"
+                        style={{width: 25}}
+                        source={require('../images/password_icon.png')}
+                      />
+                    )}
+                  />
+                }
+              />
+            </SafeAreaView>
+
+            <SafeAreaView style={{marginBottom: 20}}>
+              <TextField
+                label="Color"
+                onChangeText={text => setColor(text)}
+                value={color}
+                left={
+                  <TextInput.Icon
+                    name={() => (
+                      <Image
+                        resizeMode="contain"
+                        style={{width: 25}}
+                        source={require('../images/password_icon.png')}
+                      />
+                    )}
+                  />
+                }
+              />
+            </SafeAreaView>
+
+            <SafeAreaView style={{marginBottom: 20}}>
+              <TextInput
+                label="Description"
+                onChangeText={text => setPetDescription(text)}
+                value={petDescription}
+                multiline={true}
+                numberOfLines={4}
+                activeOutlineColor={'#CF3339'}
+                outlineColor={'rgba(0,0,0,0.20)'}
+                style={{
+                  height: 200,
+                  width: '100%',
+                  backgroundColor: '#ffffff',
+                  textAlignVertical: 'top',
+                  borderWidth: 0.5,
+                  borderTopLeftRadius: 7,
+                  borderTopRightRadius: 7,
+                  borderBottomLeftRadius: 7,
+                  borderBottomRightRadius: 7,
+                  padding: 20,
                 }}
               />
             </SafeAreaView>
@@ -185,16 +313,18 @@ export default function AdoptionPostForm({navigation}) {
               <IntlPhoneInput
                 // flagStyle={{display: 'none'}}
                 defaultCountry="PK"
+                value={phone}
                 renderAction={() => <Text>XX</Text>}
                 containerStyle={styles.phoneInput}
                 onChangeText={data => {
+                  console.log(data);
                   if (data.phoneNumber[0] === '0') {
-                    setPhoneNumber(
+                    setPhone(
                       `${data.phoneNumber.substring(1)}`.replace(' ', ''),
                     );
                     setDialCode(data.dialCode);
                   } else {
-                    setPhoneNumber(`${data.phoneNumber}`.replace(' ', ''));
+                    setPhone(`${data.phoneNumber}`.replace(' ', ''));
                     setDialCode(`${data.dialCode}`);
                   }
                 }}
@@ -202,129 +332,23 @@ export default function AdoptionPostForm({navigation}) {
               />
             </SafeAreaView>
 
-            <View style={{marginBottom: 20}}>
-              <TextField
-                label="Password"
-                secureTextEntry={showPassword ? false : true}
-                onChangeText={text => setPassword(text)}
-                left={
-                  <TextInput.Icon
-                    name={() => (
-                      <Image
-                        resizeMode="contain"
-                        style={{width: 25}}
-                        source={require('../images/password_icon.png')}
-                      />
-                    )}
-                  />
-                }
-                right={
-                  <TextInput.Icon
-                    onPress={() => {
-                      setShowPassword(!showPassword);
-                    }}
-                    name={() =>
-                      showPassword ? (
-                        <Image
-                          resizeMode="contain"
-                          style={{width: 25}}
-                          source={require('../images/eyeOpen.png')}
-                        />
-                      ) : (
-                        <Image
-                          resizeMode="contain"
-                          style={{width: 25}}
-                          source={require('../images/Hide.png')}
-                        />
-                      )
-                    }
-                  />
-                }
-              />
-            </View>
-
-            <View style={{marginBottom: 20}}>
-              <TextField
-                label="Confirm Password"
-                secureTextEntry={showConfirmPassword ? false : true}
-                onChangeText={text => setConfirmPassword(text)}
-                left={
-                  <TextInput.Icon
-                    name={() => (
-                      <Image
-                        resizeMode="contain"
-                        style={{width: 25}}
-                        source={require('../images/password_icon.png')}
-                      />
-                    )}
-                  />
-                }
-                right={
-                  <TextInput.Icon
-                    onPress={() => {
-                      setShowConfirmPassword(!showConfirmPassword);
-                    }}
-                    name={() =>
-                      showConfirmPassword ? (
-                        <Image
-                          resizeMode="contain"
-                          style={{width: 25}}
-                          source={require('../images/eyeOpen.png')}
-                        />
-                      ) : (
-                        <Image
-                          resizeMode="contain"
-                          style={{width: 25}}
-                          source={require('../images/Hide.png')}
-                        />
-                      )
-                    }
-                  />
-                }
-              />
-            </View>
+            <TouchableOpacity
+              style={styles.chooseImageButton}
+              onPress={async () => {
+                await chooseImage();
+              }}>
+              <Text style={{fontSize: 18}}>{imageName}</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.signInButton}
               onPress={async () => {
-                const _storeData = async () => {
-                  try {
-                    await AsyncStorage.setItem('@email', email);
-                  } catch (error) {
-                    console.log(error);
-                  }
-                };
-                _storeData();
-                sendData();
+                await sendData();
               }}>
               <Text style={{textAlign: 'center', fontSize: 20, color: '#FFF'}}>
-                Register Now
+                Submit
               </Text>
             </TouchableOpacity>
-            <View style={{width: '100%', height: 50}}>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                }}>
-                <Text
-                  style={{fontSize: 14, fontWeight: '500', paddingRight: 5}}>
-                  Already have an account?
-                </Text>
-                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      color: '#CF3339',
-                      fontWeight: 'bold',
-                      textDecorationLine: 'underline',
-                    }}>
-                    Sign In
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
 
             <View
               style={{
@@ -375,6 +399,14 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     backgroundColor: '#CF3339',
+    marginBottom: 15,
+  },
+  chooseImageButton: {
+    width: '100%',
+    alignSelf: 'center',
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: '#FFF',
     marginBottom: 15,
   },
   centeredView: {

@@ -37,7 +37,7 @@ export default function Adopt({navigation}) {
             }}>
             <View style={styles.profilePicture}>
               <TouchableOpacity
-                onPress={() => navigation.navigate('AdoptionPostForm')}>
+                onPress={() => navigation.navigate('Adoption Post Form')}>
                 <View style={{marginBottom: 24}}>
                   <Image
                     resizeMode="contain"

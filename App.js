@@ -159,7 +159,10 @@ function App() {
           <Stack.Screen name="ReportAnimal" component={MyAccount} />
           <Stack.Screen name="Adopt" component={Adopt} />
           <Stack.Screen name="AdoptAnimal" component={AdoptAnimal} />
-          <Stack.Screen name="AdoptionPostForm" component={AdoptionPostForm} />
+          <Stack.Screen
+            name="Adoption Post Form"
+            component={AdoptionPostForm}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

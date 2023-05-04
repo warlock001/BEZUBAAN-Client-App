@@ -9,66 +9,175 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Button,
+  Pressable,
   Alert,
+  Modal,
   Platform,
+  FlatList,
   Dimensions,
   PermissionsAndroid,
 } from 'react-native';
-
+import axios from 'axios';
 import React, {useState, useRef, useEffect} from 'react';
 import {Drawer} from 'react-native-paper';
 import LoadingModal from '../components/loadingScreen';
+import Lottie from 'lottie-react-native';
+import {
+  CommonActions,
+  NavigationContainer,
+  useFocusEffect,
+} from '@react-navigation/native';
 const REACT_APP_BASE_URL = 'http://192.168.0.107:3001';
 const {width: PAGE_WIDTH, height: PAGE_HEIGHT} = Dimensions.get('window');
 export default function AdoptAnimal({navigation}) {
   const [loader, setLoader] = useState(false);
+  const [adoption, setAdoption] = useState([]);
+  const [shouldUpdate, setShouldUpdate] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const renderItem = ({item}) => (
+    <View style={{backgroundColor: '#FFFFFF', marginBottom: 20, elevation: 10}}>
+      <View>
+        <Image
+          source={require('../images/onBoardingPet3.jpeg')}
+          style={{width: '100%', height: 200}}
+          resizeMode="contain"
+        />
+        <View
+          style={{
+            padding: 10,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <Text style={{fontSize: 22, borderWidth: 1, padding: 5}}>
+            {item.pet.petType}
+          </Text>
+          <Text style={{fontSize: 22, borderWidth: 1, padding: 5}}>
+            {item.pet.breed}
+          </Text>
+          <Text style={{fontSize: 22, borderWidth: 1, padding: 5}}>
+            {item.pet.age}
+          </Text>
+          <Text style={{fontSize: 22, borderWidth: 1, padding: 5}}>
+            {item.pet.breed}
+          </Text>
+          <Text style={{fontSize: 22, borderWidth: 1, padding: 5}}>
+            {item.pet.color}
+          </Text>
+        </View>
+        <View
+          style={{
+            padding: 10,
+          }}>
+          <Text>{item.pet.petDescription}</Text>
+        </View>
+        <View
+          style={{
+            padding: 10,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <Text>{item.phone}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setModalVisible(true);
+            }}>
+            <Text style={{color: '#cf3339'}}>Mark as interested</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      axios({
+        method: 'GET',
+        url: `${REACT_APP_BASE_URL}/adoption`,
+      })
+        .then(res => {
+          console.log(res.data);
+          setAdoption(res.data.adoption);
+        })
+        .catch(err => console.log(err));
+    }, [shouldUpdate]),
+  );
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#eededf'}}>
-      <View style={[styles.bottomSection, {padding: 24}]}>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View
+          style={[
+            styles.centeredView,
+            modalVisible ? {backgroundColor: 'rgba(0,0,0,0.5)'} : '',
+          ]}>
+          <View style={styles.modalView}>
+            <Lottie
+              resizeMode="cover"
+              style={{
+                width: 150,
+                // height: '100%',
+              }}
+              source={require('../images/success_lottie.json')}
+              loop={false}
+              autoPlay
+            />
+
+            <Text
+              style={{
+                paddingTop: 31,
+                fontSize: 24,
+                fontWeight: '500',
+                color: '#1A8E2D',
+                textAlign: 'center',
+              }}>
+              Successful
+            </Text>
+            <Text
+              style={{
+                paddingTop: 10,
+                fontSize: 15,
+                fontWeight: '500',
+                color: '#000',
+                textAlign: 'center',
+              }}>
+              Your Request has been submitted
+            </Text>
+            <Pressable
+              style={[styles.doneButton]}
+              onPress={() => navigation.navigate('Login')}>
+              <Text style={{color: '#FFF', fontSize: 17, fontWeight: '700'}}>
+                Done
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      <View style={[styles.bottomSection]}>
         {/* <SidebarLayout header={'My Account'} /> */}
         {!loader ? (
-          <ScrollView
+          <View
             style={{
-              width: '100%',
-              height: '100%',
-              paddingVertical: 24,
-              marginBottom: 70,
+              marginTop: 12,
+              paddingHorizontal: 10,
+              // zIndex: 10,
+              height: PAGE_HEIGHT - 150,
             }}>
-            <View style={styles.profilePicture}>
-              <TouchableOpacity>
-                <View style={{marginBottom: 24}}>
-                  <Image
-                    resizeMode="contain"
-                    style={{
-                      width: 110,
-                      height: 110,
-                    }}
-                    source={require('../images/contact-form.png')}
-                  />
-                </View>
-              </TouchableOpacity>
-
-              <Text style={styles.textStyle2}>Post For Adoption</Text>
-            </View>
-
-            <View style={styles.profilePicture}>
-              <TouchableOpacity>
-                <View style={{marginBottom: 24}}>
-                  <Image
-                    resizeMode="contain"
-                    style={{
-                      width: 110,
-                      height: 110,
-                    }}
-                    source={require('../images/house.png')}
-                  />
-                </View>
-              </TouchableOpacity>
-
-              <Text style={styles.textStyle2}>Adopt an animal</Text>
-            </View>
-          </ScrollView>
+            <FlatList
+              data={adoption}
+              renderItem={renderItem}
+              keyExtractor={item => item._id}
+              // extraData={selectedId}
+            />
+          </View>
         ) : (
           <LoadingModal />
         )}
