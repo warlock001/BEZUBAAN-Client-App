@@ -22,12 +22,14 @@ import React, {useState, useRef, useEffect} from 'react';
 import {Drawer} from 'react-native-paper';
 import LoadingModal from '../components/loadingScreen';
 import Lottie from 'lottie-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   CommonActions,
   NavigationContainer,
   useFocusEffect,
 } from '@react-navigation/native';
-const REACT_APP_BASE_URL = 'http://192.168.0.107:3001';
+import {Config} from '../config';
+const REACT_APP_BASE_URL = Config.ip;
 const {width: PAGE_WIDTH, height: PAGE_HEIGHT} = Dimensions.get('window');
 export default function AdoptAnimal({navigation}) {
   const [loader, setLoader] = useState(false);
@@ -38,7 +40,7 @@ export default function AdoptAnimal({navigation}) {
     <View style={{backgroundColor: '#FFFFFF', marginBottom: 20, elevation: 10}}>
       <View>
         <Image
-          source={require('../images/onBoardingPet3.jpeg')}
+          source={{uri: item.image}}
           style={{width: '100%', height: 200}}
           resizeMode="contain"
         />
@@ -55,12 +57,10 @@ export default function AdoptAnimal({navigation}) {
           <Text style={{fontSize: 22, borderWidth: 1, padding: 5}}>
             {item.pet.breed}
           </Text>
-          <Text style={{fontSize: 22, borderWidth: 1, padding: 5}}>
+          <Text style={{fontSize: 22, borderWidth: 1, padding: 10}}>
             {item.pet.age}
           </Text>
-          <Text style={{fontSize: 22, borderWidth: 1, padding: 5}}>
-            {item.pet.breed}
-          </Text>
+
           <Text style={{fontSize: 22, borderWidth: 1, padding: 5}}>
             {item.pet.color}
           </Text>
@@ -96,9 +96,28 @@ export default function AdoptAnimal({navigation}) {
         method: 'GET',
         url: `${REACT_APP_BASE_URL}/adoption`,
       })
-        .then(res => {
+        .then(async res => {
           console.log(res.data);
-          setAdoption(res.data.adoption);
+          const token = await AsyncStorage.getItem('@jwt');
+          res.data.adoption.forEach((item, index) => {
+            axios({
+              method: 'GET',
+              url: `${REACT_APP_BASE_URL}/files/${item.pet.file}/true`,
+              headers: {
+                'x-auth-token': token,
+              },
+            })
+              .then(response => {
+                console.log(response);
+                (res.data.adoption[
+                  index
+                ].image = `data:${response.headers['content-type']};base64,${response.data}`),
+                  setAdoption(res.data.adoption);
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          });
         })
         .catch(err => console.log(err));
     }, [shouldUpdate]),

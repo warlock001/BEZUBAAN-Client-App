@@ -18,7 +18,8 @@ import {
 import React, {useState, useRef, useEffect} from 'react';
 import {Drawer} from 'react-native-paper';
 import LoadingModal from '../components/loadingScreen';
-const REACT_APP_BASE_URL = 'http://192.168.0.107:3001';
+import {Config} from '../config';
+const REACT_APP_BASE_URL = Config.ip;
 const {width: PAGE_WIDTH, height: PAGE_HEIGHT} = Dimensions.get('window');
 export default function Adopt({navigation}) {
   const [loader, setLoader] = useState(false);

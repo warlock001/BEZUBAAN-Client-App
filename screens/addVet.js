@@ -29,19 +29,27 @@ import {launchImageLibrary} from 'react-native-image-picker';
 const {width: PAGE_WIDTH, height: PAGE_HEIGHT} = Dimensions.get('window');
 const mime = require('mime');
 
-export default function AdoptionPostForm({navigation}) {
-  const [petType, setPetType] = useState('');
-  const [breed, setBreed] = useState('');
-  const [age, setAge] = useState('');
-  const [color, setColor] = useState('');
-  const [petDescription, setPetDescription] = useState('');
+export default function AddVet({navigation}) {
+  const [vetType, setVetType] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [rating, setRating] = useState('');
+  const [vetDescription, setVetDescription] = useState('');
   const [phone, setPhone] = useState(null);
   const [dialCode, setDialCode] = useState('');
   const [image, setImage] = useState('');
   const [imageName, setImageName] = useState('Choose an image');
   const [modalVisible, setModalVisible] = useState(false);
 
-  const petTypes = ['Dog', 'Bird', 'Cat', 'Fish'];
+  const vetTypes = [
+    'Feline Vet',
+    'Avian Vet',
+    'Canine Vet',
+    'Companion Vet',
+    'Exotic Vet',
+    'Livestock Vet',
+    'Laboratory Vet',
+  ];
 
   const chooseImage = async () => {
     if (Platform.OS === 'android') {
@@ -93,7 +101,7 @@ export default function AdoptionPostForm({navigation}) {
       dialCode: dialCode,
     });
 
-    if (!petType || !breed || !color || !petDescription || !phone || !image) {
+    if (!vetType || !breed || !color || !petDescription || !phone || !image) {
       Alert.alert('', 'Please fill in All the required details.', [
         {text: 'OK', onPress: () => console.log('OK Pressed')},
       ]);
@@ -101,7 +109,7 @@ export default function AdoptionPostForm({navigation}) {
       id = await AsyncStorage.getItem('@id');
       const form = new FormData();
       form.append('image', image);
-      form.append('petType', petType);
+      form.append('vetType', vetType);
       form.append('breed', breed);
       form.append('age', age);
       form.append('color', color);
@@ -201,14 +209,8 @@ export default function AdoptionPostForm({navigation}) {
         <View style={styles.innerContainer}>
           <View style={styles.topheader}>
             <View style={styles.textView}>
-              <Text style={styles.textStyle}>Find Your Pet</Text>
-              <Text style={[styles.textStyle, {paddingBottom: 20}]}>
-                A New Home
-              </Text>
-              <Text style={styles.textStyle2}>
-                Fill out the details below to post your pet on our listing and
-                find our pet a new home.
-              </Text>
+              <Text style={styles.textStyle}>Add A New Vet</Text>
+              <Text style={styles.textStyle2}>Add a new vet to your Team.</Text>
             </View>
           </View>
         </View>
@@ -220,65 +222,43 @@ export default function AdoptionPostForm({navigation}) {
           <View style={{height: '100%', padding: 24}}>
             <SafeAreaView style={{marginBottom: 20}}>
               <SelectBox
-                data={petTypes}
-                defaultButtonText="Select Pet Type"
+                data={vetTypes}
+                defaultButtonText="Select Vet Type"
                 onSelect={(selectedItem, index) => {
-                  setPetType(selectedItem);
+                  setVetType(selectedItem);
                 }}
               />
             </SafeAreaView>
-
             <SafeAreaView style={{marginBottom: 20}}>
               <TextField
-                label="Bread"
-                onChangeText={text => setBreed(text)}
-                value={breed}
+                label="First Name"
+                onChangeText={text => setFirstName(text)}
                 left={
                   <TextInput.Icon
+                    resizeMode="contain"
+                    style={{width: 25}}
                     name={() => (
                       <Image
                         resizeMode="contain"
                         style={{width: 25}}
-                        source={require('../images/password_icon.png')}
+                        source={require('../images/User1.png')}
                       />
                     )}
                   />
                 }
               />
             </SafeAreaView>
-
             <SafeAreaView style={{marginBottom: 20}}>
               <TextField
-                label="Age"
-                keyboardType="numeric"
-                onChangeText={text => setAge(text)}
-                value={age}
+                label="Last Name"
+                onChangeText={text => setLastName(text)}
                 left={
                   <TextInput.Icon
                     name={() => (
                       <Image
                         resizeMode="contain"
                         style={{width: 25}}
-                        source={require('../images/password_icon.png')}
-                      />
-                    )}
-                  />
-                }
-              />
-            </SafeAreaView>
-
-            <SafeAreaView style={{marginBottom: 20}}>
-              <TextField
-                label="Color"
-                onChangeText={text => setColor(text)}
-                value={color}
-                left={
-                  <TextInput.Icon
-                    name={() => (
-                      <Image
-                        resizeMode="contain"
-                        style={{width: 25}}
-                        source={require('../images/password_icon.png')}
+                        source={require('../images/User1.png')}
                       />
                     )}
                   />
@@ -289,8 +269,8 @@ export default function AdoptionPostForm({navigation}) {
             <SafeAreaView style={{marginBottom: 20}}>
               <TextInput
                 label="Description"
-                onChangeText={text => setPetDescription(text)}
-                value={petDescription}
+                onChangeText={text => setVetDescription(text)}
+                value={vetDescription}
                 multiline={true}
                 numberOfLines={4}
                 activeOutlineColor={'#CF3339'}

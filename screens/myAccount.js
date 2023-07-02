@@ -28,8 +28,9 @@ import axios from 'axios';
 // import SidebarLayout from '../layouts/sidebarLayout';
 // import ImagePicker from 'react-native-image-crop-picker';
 import LoadingModal from '../components/loadingScreen';
-const REACT_APP_BASE_URL = 'http://192.168.0.107:3001';
-const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');
+import {Config} from '../config';
+const REACT_APP_BASE_URL = Config.ip;
+const {width: PAGE_WIDTH, height: PAGE_HEIGHT} = Dimensions.get('window');
 export default function MyAccount({navigation}) {
   const [firstName, setFirstName] = useState(null);
   const [lastName, setLastName] = useState(null);
@@ -49,18 +50,22 @@ export default function MyAccount({navigation}) {
 
   var id;
   useFocusEffect(
-    React.useCallback(async () => {
-      await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      );
+    React.useCallback(() => {
+      getPermissions = async () => {
+        await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
 
-      await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-      );
+        await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+        );
 
-      await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION,
-      );
+        await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_BACKGROUND_LOCATION,
+        );
+      };
+
+      getPermissions();
 
       getMyStringValue = async () => {
         try {
@@ -304,22 +309,20 @@ export default function MyAccount({navigation}) {
           <LoadingModal />
         )}
 
-        
-      <View
-        style={{
-          marginBottom: 24,
-          alignSelf: 'center',
-          justifyContent: 'flex-start',
-          backgroundColor:"Red"
-        }}>
-        <Image
-          resizeMode="contain"
-          style={{width: PAGE_WIDTH - 186}}
-          source={require('../assets/tagline.png')}
-        />
+        <View
+          style={{
+            marginBottom: 24,
+            alignSelf: 'center',
+            justifyContent: 'flex-start',
+            backgroundColor: 'Red',
+          }}>
+          <Image
+            resizeMode="contain"
+            style={{width: PAGE_WIDTH - 186}}
+            source={require('../assets/tagline.png')}
+          />
+        </View>
       </View>
-      </View>
-
     </SafeAreaView>
   );
 }
@@ -331,7 +334,7 @@ const styles = StyleSheet.create({
   },
   profilePicture: {
     alignItems: 'center',
-    marginBottom: 50
+    marginBottom: 50,
   },
   camera: {
     position: 'absolute',
