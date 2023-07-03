@@ -39,7 +39,7 @@ export default function SignIn({navigation}) {
       navigation.dispatch(
         CommonActions.reset({
           index: 1,
-          routes: [{name: 'Home'}],
+          routes: [{name: 'Main Menu'}],
         }),
       );
     }
@@ -66,9 +66,9 @@ export default function SignIn({navigation}) {
         await AsyncStorage.setItem('@role', res.data.role);
         setLoader(false);
         if (res.data.role == 'client') {
-          navigation.navigate('Home');
+          navigation.navigate('Main Menu');
         } else {
-          navigation.navigate('Menu');
+          navigation.navigate('RescuerStack');
         }
       })
       .catch(er => {

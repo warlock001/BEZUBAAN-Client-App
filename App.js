@@ -118,7 +118,7 @@ function App() {
             },
             tabBarShowLabel: true,
           }}
-          name="Home"
+          name="Main Menu"
           component={Home}
         />
 
@@ -168,23 +168,23 @@ function App() {
 
   function RescuerStack({route, navigation}) {
     const {shouldRedirect, UserRole} = route.params;
-    useEffect(() => {
-      if (shouldRedirect === true) {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 1,
-            routes: [{name: 'OnBoarding1'}],
-          }),
-        );
-      } else if (UserRole == 'client') {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 1,
-            routes: [{name: 'HomeStack'}],
-          }),
-        );
-      }
-    }, [shouldRedirect]);
+    // useEffect(() => {
+    //   if (shouldRedirect === true) {
+    //     navigation.dispatch(
+    //       CommonActions.reset({
+    //         index: 1,
+    //         routes: [{name: 'OnBoarding1'}],
+    //       }),
+    //     );
+    //   } else if (UserRole == 'client') {
+    //     navigation.dispatch(
+    //       CommonActions.reset({
+    //         index: 1,
+    //         routes: [{name: 'HomeStack'}],
+    //       }),
+    //     );
+    //   }
+    // }, [shouldRedirect]);
 
     return (
       <Tab.Navigator

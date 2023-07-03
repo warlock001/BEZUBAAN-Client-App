@@ -30,11 +30,10 @@ const {width: PAGE_WIDTH, height: PAGE_HEIGHT} = Dimensions.get('window');
 const mime = require('mime');
 
 export default function AddVet({navigation}) {
-  const [vetType, setVetType] = useState('');
+  const [type, setVetType] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [rating, setRating] = useState('');
-  const [vetDescription, setVetDescription] = useState('');
+  const [description, setVetDescription] = useState('');
   const [phone, setPhone] = useState(null);
   const [dialCode, setDialCode] = useState('');
   const [image, setImage] = useState('');
@@ -92,54 +91,60 @@ export default function AddVet({navigation}) {
 
   async function sendData() {
     console.log({
-      petType: petType,
-      breed: breed,
-      age: age,
-      color: color,
-      petDescription: petDescription,
-      phone: phone,
+      type: type,
+      firstName: firstName,
+      lastName: lastName,
+      description: description,
+      mobile: phone,
       dialCode: dialCode,
+      countryCode: dialCode,
     });
 
-    if (!vetType || !breed || !color || !petDescription || !phone || !image) {
+    if (
+      !type ||
+      !firstName ||
+      !lastName ||
+      !description ||
+      !phone ||
+      !dialCode ||
+      !image
+    ) {
       Alert.alert('', 'Please fill in All the required details.', [
         {text: 'OK', onPress: () => console.log('OK Pressed')},
       ]);
     } else {
-      id = await AsyncStorage.getItem('@id');
       const form = new FormData();
       form.append('image', image);
-      form.append('vetType', vetType);
-      form.append('breed', breed);
-      form.append('age', age);
-      form.append('color', color);
-      form.append('petDescription', petDescription);
+      form.append('type', type);
+      form.append('firstName', firstName);
+      form.append('lastName', lastName);
+      form.append('description', description);
+      form.append('mobile', phone);
       form.append('dialCode', dialCode);
-      form.append('phone', phone);
-      form.append('id', id);
+      form.append('countryCode', dialCode);
       axios({
         method: 'POST',
-        url: `${REACT_APP_BASE_URL}/adoption`,
+        url: `${REACT_APP_BASE_URL}/vet`,
         data: form,
         headers: {
           accept: 'application/json',
-          'Content-Type': 'multipart/form-data', // add this
-          'x-auth-token':
-            'eyJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2M2JjNWZlZDM3OTY0ZjlkM2E2M2I5ZWIiLCJyb2xlIjoiY2xpZW50In0.bgUbZk0lKqY65wgSF-JU-_zxmOasQZ9ClTatL-Qtmv4',
+          'Content-Type': 'multipart/form-data',
         },
       })
         .then(res => {
           console.log(res.message);
           setModalVisible(true);
-          setPetType('');
-          setBreed('');
-          setAge('');
-          setColor('');
-          setPetDescription('');
+          setVetType('');
+          setFirstName('');
+          setLastName('');
+          setVetDescription('');
           setPhone('');
+          setDialCode('');
+          setImage('');
+          setImageName('');
         })
-        .catch(err => {
-          console.log(err);
+        .catch(res => {
+          console.log(res);
           Alert.alert('', 'Unknown Error Occured', [
             {text: 'OK', onPress: () => console.log('OK Pressed')},
           ]);
@@ -191,7 +196,7 @@ export default function AddVet({navigation}) {
                 color: '#000',
                 textAlign: 'center',
               }}>
-              Your Pet Will Find Its New Home Soon{' '}
+              Vet has been added sucessfully{' '}
             </Text>
             <Pressable
               style={[styles.doneButton]}
@@ -270,7 +275,7 @@ export default function AddVet({navigation}) {
               <TextInput
                 label="Description"
                 onChangeText={text => setVetDescription(text)}
-                value={vetDescription}
+                value={description}
                 multiline={true}
                 numberOfLines={4}
                 activeOutlineColor={'#CF3339'}
