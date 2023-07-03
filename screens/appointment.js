@@ -18,7 +18,7 @@ import {
   PermissionsAndroid,
 } from 'react-native';
 import axios from 'axios';
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import LoadingModal from '../components/loadingScreen';
 import Lottie from 'lottie-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -28,47 +28,86 @@ import {
   useFocusEffect,
 } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import {Config} from '../config';
+import { Config } from '../config';
 const REACT_APP_BASE_URL = Config.ip;
-const {width: PAGE_WIDTH, height: PAGE_HEIGHT} = Dimensions.get('window');
+const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');
 
-export default function Appointment({navigation}) {
+export default function Appointment({ navigation }) {
   const [clinicVisit, setClinicVisit] = useState(false);
-  const vet = [
-    {
-      _id: 0,
-      name: 'Zabloon Albert',
-      feild: 'avian',
-      rating: '5.0',
-    },
-    {
-      _id: 1,
-      name: 'Zabloon Albert',
-      rating: '3.0',
-      feild: 'Livestock Vets',
-    },
-    {
-      _id: 2,
-      name: 'Zabloon Albert',
-      rating: '2.0',
-      feild: 'Companion Vets',
-    },
-    {
-      _id: 3,
-      name: 'Zabloon Albert',
-      rating: '4.0',
-      feild: 'general',
-    },
-    {
-      _id: 4,
-      name: 'Zabloon Albert',
-      rating: '4.0',
-      feild: 'general',
-    },
-  ];
+  const [shouldUpdate, setShouldUpdate] = useState(false);
+  const [vet, setVet] = useState(false);
 
-  const renderItem = ({item}) => (
-    <View
+  useFocusEffect(
+    React.useCallback(() => {
+      axios({
+        method: 'GET',
+        url: `${REACT_APP_BASE_URL}/vet`,
+      })
+        .then(async res => {
+          // console.log(res.data);
+          const token = await AsyncStorage.getItem('@jwt');
+          await res.data.vet.forEach(async (item, index) => {
+            await axios({
+              method: 'GET',
+              url: `${REACT_APP_BASE_URL}/files/${item.profilePicture[0]}/true`,
+              headers: {
+                'x-auth-token': token,
+              },
+            })
+              .then(response => {
+                // console.log(response);
+                res.data.vet[index].image = `data:${response.headers['content-type']};base64,${response.data}`
+                console.log(res.data.vet)
+                setVet(res.data.vet);
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          });
+
+        })
+        .catch(err => console.log(err));
+    }, [shouldUpdate]),
+  );
+
+  // const vet = [
+  //   {
+  //     _id: 0,
+  //     name: 'Zabloon Albert',
+  //     feild: 'avian',
+  //     rating: '5.0',
+  //   },
+  //   {
+  //     _id: 1,
+  //     name: 'Zabloon Albert',
+  //     rating: '3.0',
+  //     feild: 'Livestock Vets',
+  //   },
+  //   {
+  //     _id: 2,
+  //     name: 'Zabloon Albert',
+  //     rating: '2.0',
+  //     feild: 'Companion Vets',
+  //   },
+  //   {
+  //     _id: 3,
+  //     name: 'Zabloon Albert',
+  //     rating: '4.0',
+  //     feild: 'general',
+  //   },
+  //   {
+  //     _id: 4,
+  //     name: 'Zabloon Albert',
+  //     rating: '4.0',
+  //     feild: 'general',
+  //   },
+  // ];
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate("Schedule Appointment", { id: "988978" })
+      }}
       style={{
         backgroundColor: '#fff',
         padding: 10,
@@ -78,21 +117,24 @@ export default function Appointment({navigation}) {
         marginBottom: 20,
         elevation: 10,
       }}>
-      <View style={{flexWrap: 'wrap', flexDirection: 'row', marginBottom: 5}}>
+      <View style={{ flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'center', marginBottom: 5, borderRadius: 500 }}>
         <Image
           style={{
-            resizeMode: 'contain',
-            flex: 1,
+            width: 70,
             height: 70,
+            borderRadius: 150 / 2,
+            overflow: "hidden",
+            // width: 70,
             flexWrap: 'wrap',
+            // borderRadius: 500
           }}
-          source={require('../images/AccountingImage.png')}
+          source={{ uri: item.image }}
         />
       </View>
-      <Text style={{fontSize: 20, textAlign: 'center', color: '#000000'}}>
-        {item.name}
+      <Text style={{ fontSize: 20, textAlign: 'center', color: '#000000' }}>
+        {item.firstName + " " + item.lastName}
       </Text>
-      <Text style={{textAlign: 'center', marginBottom: 10}}>{item.feild}</Text>
+      <Text style={{ textAlign: 'center', marginBottom: 10 }}>{item.type}</Text>
       <View
         style={{
           flexWrap: 'wrap',
@@ -100,27 +142,27 @@ export default function Appointment({navigation}) {
           justifyContent: 'center',
         }}>
         <Image width={5} source={require('../images/star.png')} />
-        <Text> {item.rating}</Text>
+        <Text> {item.rating} 5.0</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
-    <View style={{height: '100%'}}>
-      <View style={{width: '100%', height: 250}}>
+    <View style={{ height: '100%' }}>
+      <View style={{ width: '100%', height: 250 }}>
         <LinearGradient
           colors={['#CF333900', '#CF3339']}
           style={styles.gradientStyle}
-          start={{x: 0.5, y: 0.5}}
-          end={{x: 0.5, y: 1.5}}
+          start={{ x: 0.5, y: 0.5 }}
+          end={{ x: 0.5, y: 1.5 }}
         />
         <View style={styles.topheader}>
-          <View style={{paddingBottom: 30}}>
+          <View style={{ paddingBottom: 30 }}>
             <Text>Get Help For Your</Text>
             <Text style={styles.textStyle}>BEZUBAAN</Text>
           </View>
 
-          <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
             <TouchableOpacity
               onPress={() => {
                 setClinicVisit(true);
@@ -144,7 +186,7 @@ export default function Appointment({navigation}) {
                   padding: 5,
                 }}>
                 <Image
-                  style={{height: 25, width: 25, flexWrap: 'wrap'}}
+                  style={{ height: 25, width: 25, flexWrap: 'wrap' }}
                   source={require('../images/add.png')}></Image>
               </View>
               <View>
@@ -188,7 +230,7 @@ export default function Appointment({navigation}) {
                   padding: 5,
                 }}>
                 <Image
-                  style={{height: 25, width: 25, flexWrap: 'wrap'}}
+                  style={{ height: 25, width: 25, flexWrap: 'wrap' }}
                   source={require('../images/home-visit.png')}></Image>
               </View>
               <View>
@@ -211,7 +253,7 @@ export default function Appointment({navigation}) {
           </View>
         </View>
       </View>
-      <View style={{padding: 24, flex: 1}}>
+      <View style={{ padding: 24, flex: 1 }}>
         <Text
           style={{
             fontSize: 24,
@@ -223,13 +265,13 @@ export default function Appointment({navigation}) {
         </Text>
 
         <FlatList
-          style={{flexGrow: 1}}
-          columnWrapperStyle={{justifyContent: 'space-between'}}
+          style={{ flexGrow: 1 }}
+          columnWrapperStyle={{ justifyContent: 'space-between' }}
           data={vet}
           renderItem={renderItem}
           keyExtractor={item => item._id}
           numColumns={2}
-          // extraData={selectedId}
+        // extraData={selectedId}
         />
       </View>
     </View>
@@ -247,7 +289,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#CF3339',
   },
-  textStyle2: {fontSize: 16, fontWeight: '400', color: '#FFF'},
+  textStyle2: { fontSize: 16, fontWeight: '400', color: '#FFF' },
   bottomSection: {
     flexGrow: 1,
     backgroundColor: '#f1f1f1',

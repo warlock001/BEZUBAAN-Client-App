@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './screens/login';
 import Register from './screens/register';
 import Home from './screens/home.js';
@@ -22,11 +22,11 @@ import MyAccount from './screens/myAccount';
 import Logout from './screens/logout';
 import RescueCenter from './screens/rescueCenter';
 import Appointment from './screens/appointment';
-import React, {useEffect, useState} from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, { useEffect, useState } from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MyTabBar from './components/tabBar';
-import {useDispatch} from 'react-redux';
-import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
+import { useDispatch } from 'react-redux';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
@@ -41,6 +41,7 @@ import AdoptAnimal from './screens/adoptAnimal';
 import AdoptionPostForm from './screens/adoptionPostForm';
 import RescueCenterHome from './screens/rescueCenterHome';
 import AddVet from './screens/addVet';
+import ScheduleAppointment from './screens/scheduleAppointment';
 // const Drawer = createDrawerNavigator();
 
 // function MyDrawer() {
@@ -74,21 +75,22 @@ function App() {
     func();
   }, []);
 
-  function HomeStack({route, navigation}) {
-    const {shouldRedirect, UserRole} = route.params;
+  function HomeStack({ route, navigation }) {
+    const { shouldRedirect, UserRole } = route.params;
     useEffect(() => {
       if (shouldRedirect === true) {
         navigation.dispatch(
           CommonActions.reset({
             index: 1,
-            routes: [{name: 'OnBoarding1'}],
+            routes: [{ name: 'OnBoarding1' }],
           }),
         );
       } else if (UserRole == 'rescuer') {
+        console.log("aa gya idr")
         navigation.dispatch(
           CommonActions.reset({
             index: 1,
-            routes: [{name: 'RescuerStack'}],
+            routes: [{ name: 'RescuerStack' }],
           }),
         );
       }
@@ -97,7 +99,7 @@ function App() {
     return (
       <Tab.Navigator
         tabBar={props => <MyTabBar {...props} />}
-        screenOptions={({route}) => ({
+        screenOptions={({ route }) => ({
           unmountOnBlur: true,
           headerShown: false,
         })}>
@@ -112,7 +114,7 @@ function App() {
                       ? require('./images/home2.png')
                       : require('./images/homegrey.png')
                   }
-                  style={{width: 20, height: 20}}
+                  style={{ width: 20, height: 20 }}
                 />
               );
             },
@@ -128,7 +130,7 @@ function App() {
               return (
                 <Image
                   resizeMode={'contain'}
-                  style={{width: 20, height: 20}}
+                  style={{ width: 20, height: 20 }}
                   source={
                     focused
                       ? require('./images/account.png')
@@ -148,7 +150,7 @@ function App() {
               return (
                 <Image
                   resizeMode={'contain'}
-                  style={{width: 20, height: 20}}
+                  style={{ width: 20, height: 20 }}
                   source={
                     focused
                       ? require('./images/logout1.png')
@@ -166,21 +168,21 @@ function App() {
     );
   }
 
-  function RescuerStack({route, navigation}) {
-    const {shouldRedirect, UserRole} = route.params;
+  function RescuerStack({ route, navigation }) {
+    // const { shouldRedirect, UserRole } = route.params;
     // useEffect(() => {
     //   if (shouldRedirect === true) {
     //     navigation.dispatch(
     //       CommonActions.reset({
     //         index: 1,
-    //         routes: [{name: 'OnBoarding1'}],
+    //         routes: [{ name: 'OnBoarding1' }],
     //       }),
     //     );
-    //   } else if (UserRole == 'client') {
+    //   } else if (UserRole == 'rescuer') {
     //     navigation.dispatch(
     //       CommonActions.reset({
     //         index: 1,
-    //         routes: [{name: 'HomeStack'}],
+    //         routes: [{ name: 'RescuerStack' }],
     //       }),
     //     );
     //   }
@@ -189,7 +191,7 @@ function App() {
     return (
       <Tab.Navigator
         tabBar={props => <MyTabBar {...props} />}
-        screenOptions={({route}) => ({
+        screenOptions={({ route }) => ({
           unmountOnBlur: true,
           headerShown: false,
         })}>
@@ -204,7 +206,7 @@ function App() {
                       ? require('./images/home2.png')
                       : require('./images/homegrey.png')
                   }
-                  style={{width: 20, height: 20}}
+                  style={{ width: 20, height: 20 }}
                 />
               );
             },
@@ -220,7 +222,7 @@ function App() {
               return (
                 <Image
                   resizeMode={'contain'}
-                  style={{width: 20, height: 20}}
+                  style={{ width: 20, height: 20 }}
                   source={
                     focused
                       ? require('./images/account.png')
@@ -240,7 +242,7 @@ function App() {
               return (
                 <Image
                   resizeMode={'contain'}
-                  style={{width: 20, height: 20}}
+                  style={{ width: 20, height: 20 }}
                   source={
                     focused
                       ? require('./images/logout1.png')
@@ -266,12 +268,12 @@ function App() {
           <Stack.Screen
             name="RescuerStack"
             component={RescuerStack}
-            initialParams={{shouldRedirect: !loggedIn, UserRole: userRole}}
+            initialParams={{ shouldRedirect: !loggedIn, UserRole: userRole }}
           />
           <Stack.Screen
             name="HomeStack"
             component={HomeStack}
-            initialParams={{shouldRedirect: !loggedIn, UserRole: userRole}}
+            initialParams={{ shouldRedirect: !loggedIn, UserRole: userRole }}
           />
 
           <Stack.Screen name="OnBoarding1" component={OnBoarding} />
@@ -288,6 +290,7 @@ function App() {
           <Stack.Screen name="AdoptAnimal" component={AdoptAnimal} />
           <Stack.Screen name="Appointment" component={Appointment} />
           <Stack.Screen name="Add Vet" component={AddVet} />
+          <Stack.Screen name="Schedule Appointment" component={ScheduleAppointment} />
           <Stack.Screen
             name="Adoption Post Form"
             component={AdoptionPostForm}
