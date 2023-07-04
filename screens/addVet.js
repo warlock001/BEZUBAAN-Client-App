@@ -200,7 +200,7 @@ export default function AddVet({navigation}) {
             </Text>
             <Pressable
               style={[styles.doneButton]}
-              onPress={() => navigation.navigate('Home')}>
+              onPress={() => navigation.navigate('RescuerStack')}>
               <Text style={{color: '#FFF', fontSize: 17, fontWeight: '700'}}>
                 Done
               </Text>
