@@ -248,7 +248,7 @@ export default function ScheduleAppointment({route, navigation}) {
             marginBottom: 20,
           }}>
           <TouchableOpacity
-            disabled={true}
+            disabled={slot1 == 'booked' ? true : false}
             onPress={() => {
               setSelectedSlot(1);
             }}
@@ -263,6 +263,7 @@ export default function ScheduleAppointment({route, navigation}) {
             <Text style={styles.slotBTNText}>08:00 AM</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={slot2 == 'booked' ? true : false}
             onPress={() => {
               setSelectedSlot(2);
             }}
@@ -277,6 +278,7 @@ export default function ScheduleAppointment({route, navigation}) {
             <Text style={styles.slotBTNText}>10:00 AM</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={slot3 == 'booked' ? true : false}
             onPress={() => {
               setSelectedSlot(3);
             }}
@@ -298,6 +300,7 @@ export default function ScheduleAppointment({route, navigation}) {
             marginBottom: 40,
           }}>
           <TouchableOpacity
+            disabled={slot4 == 'booked' ? true : false}
             onPress={() => {
               setSelectedSlot(4);
             }}
@@ -312,6 +315,7 @@ export default function ScheduleAppointment({route, navigation}) {
             <Text style={styles.slotBTNText}>02:00 PM</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={slot5 == 'booked' ? true : false}
             onPress={() => {
               setSelectedSlot(5);
             }}
@@ -326,6 +330,7 @@ export default function ScheduleAppointment({route, navigation}) {
             <Text style={styles.slotBTNText}>04:00 PM</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={slot6 == 'booked' ? true : false}
             onPress={() => {
               setSelectedSlot(6);
             }}
