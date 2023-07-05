@@ -5,7 +5,7 @@ import {
 } from '@react-navigation/native';
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-export default function Logout({navigation}) {
+export default function Logout({ navigation }) {
   useFocusEffect(
     React.useCallback(() => {
       async function clearData() {

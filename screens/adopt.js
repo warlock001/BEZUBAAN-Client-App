@@ -15,18 +15,18 @@ import {
   PermissionsAndroid,
 } from 'react-native';
 
-import React, {useState, useRef, useEffect} from 'react';
-import {Drawer} from 'react-native-paper';
+import React, { useState, useRef, useEffect } from 'react';
+import { Drawer } from 'react-native-paper';
 import LoadingModal from '../components/loadingScreen';
-import {Config} from '../config';
+import { Config } from '../config';
 const REACT_APP_BASE_URL = Config.ip;
-const {width: PAGE_WIDTH, height: PAGE_HEIGHT} = Dimensions.get('window');
-export default function Adopt({navigation}) {
+const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');
+export default function Adopt({ navigation }) {
   const [loader, setLoader] = useState(false);
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#eededf'}}>
-      <View style={[styles.bottomSection, {padding: 24}]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#eededf' }}>
+      <View style={[styles.bottomSection, { padding: 24 }]}>
         {/* <SidebarLayout header={'My Account'} /> */}
         {!loader ? (
           <ScrollView
@@ -39,7 +39,7 @@ export default function Adopt({navigation}) {
             <View style={styles.profilePicture}>
               <TouchableOpacity
                 onPress={() => navigation.navigate('Adoption Post Form')}>
-                <View style={{marginBottom: 24}}>
+                <View style={{ marginBottom: 24 }}>
                   <Image
                     resizeMode="contain"
                     style={{
@@ -57,7 +57,7 @@ export default function Adopt({navigation}) {
             <View style={styles.profilePicture}>
               <TouchableOpacity
                 onPress={() => navigation.navigate('AdoptAnimal')}>
-                <View style={{marginBottom: 24}}>
+                <View style={{ marginBottom: 24 }}>
                   <Image
                     resizeMode="contain"
                     style={{
@@ -70,6 +70,23 @@ export default function Adopt({navigation}) {
               </TouchableOpacity>
 
               <Text style={styles.textStyle2}>Adopt an animal</Text>
+            </View>
+            <View style={styles.profilePicture}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('AdoptAnimal')}>
+                <View style={{ marginBottom: 24 }}>
+                  <Image
+                    resizeMode="contain"
+                    style={{
+                      width: 110,
+                      height: 110,
+                    }}
+                    source={require('../images/edit.png')}
+                  />
+                </View>
+              </TouchableOpacity>
+
+              <Text style={styles.textStyle2}>Edit Entry</Text>
             </View>
           </ScrollView>
         ) : (
@@ -85,7 +102,7 @@ export default function Adopt({navigation}) {
           }}>
           <Image
             resizeMode="contain"
-            style={{width: PAGE_WIDTH - 186}}
+            style={{ width: PAGE_WIDTH - 186 }}
             source={require('../assets/tagline.png')}
           />
         </View>
@@ -114,8 +131,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
   },
-  textStyle: {fontSize: 20, fontWeight: 'bold', color: '#000000'},
-  textStyle2: {fontSize: 16, fontWeight: '600', color: '#cf3339'},
+  textStyle: { fontSize: 20, fontWeight: 'bold', color: '#000000' },
+  textStyle2: { fontSize: 16, fontWeight: '600', color: '#cf3339' },
   label: {
     fontSize: 16,
     fontWeight: 'bold',

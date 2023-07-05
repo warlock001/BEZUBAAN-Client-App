@@ -12,18 +12,18 @@ import {
   Pressable,
   Modal,
 } from 'react-native';
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
-import {Dimensions} from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
+import { Dimensions } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import MenuBox from '../components/menuBox';
 import Lottie from 'lottie-react-native';
 // import SidebarLayout from '../layouts/sidebarLayout';
 import Carousel from 'react-native-reanimated-carousel';
 
-const {width: PAGE_WIDTH, height: PAGE_HEIGHT} = Dimensions.get('window');
+const { width: PAGE_WIDTH, height: PAGE_HEIGHT } = Dimensions.get('window');
 
-export default function RescueCenterHome({navigation}) {
+export default function RescueCenterHome({ navigation }) {
   const swiper = useRef(null);
   const progressValue = 0;
   const baseOptions = {
@@ -57,8 +57,8 @@ export default function RescueCenterHome({navigation}) {
   ];
 
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <SafeAreaView style={{flex: 1}}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <SafeAreaView style={{ flex: 1 }}>
         <Modal
           animationType="fade"
           transparent={true}
@@ -69,7 +69,7 @@ export default function RescueCenterHome({navigation}) {
           <View
             style={[
               styles.centeredView,
-              modalVisible ? {backgroundColor: 'rgba(0,0,0,0.5)'} : '',
+              modalVisible ? { backgroundColor: 'rgba(0,0,0,0.5)' } : '',
             ]}>
             <View style={styles.modalView}>
               {/* <Image
@@ -111,15 +111,15 @@ export default function RescueCenterHome({navigation}) {
               <Pressable
                 style={[styles.doneButton]}
                 onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={{color: '#FFF', fontSize: 17, fontWeight: '700'}}>
+                <Text style={{ color: '#FFF', fontSize: 17, fontWeight: '700' }}>
                   Done
                 </Text>
               </Pressable>
             </View>
           </View>
         </Modal>
-        <View style={{flex: 1, padding: 24}}>
-          <View style={{paddingTop: 24, flexDirection: 'row'}}></View>
+        <View style={{ flex: 1, padding: 24 }}>
+          <View style={{ paddingTop: 24, flexDirection: 'row' }}></View>
 
           <ScrollView
             style={{
@@ -127,8 +127,8 @@ export default function RescueCenterHome({navigation}) {
               width: '100%',
               marginBottom: 30,
             }}
-            contentContainerStyle={{alignItems: 'center'}}>
-            <View style={{width: '100%'}}>
+            contentContainerStyle={{ alignItems: 'center' }}>
+            <View style={{ width: '100%' }}>
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('AdoptAnimal');
@@ -194,6 +194,14 @@ export default function RescueCenterHome({navigation}) {
                   image={require('../assets/contact-form.png')}
                   PAGE_WIDTH={PAGE_WIDTH}
                   title="Add a Vet"
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Select Vet')}>
+                <MenuBox
+                  image={require('../images/files.png')}
+                  PAGE_WIDTH={PAGE_WIDTH}
+                  title="View Appointments"
                 />
               </TouchableOpacity>
             </View>
