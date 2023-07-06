@@ -73,7 +73,7 @@ export default function Adopt({ navigation }) {
             </View>
             <View style={styles.profilePicture}>
               <TouchableOpacity
-                onPress={() => navigation.navigate('AdoptAnimal')}>
+                onPress={() => navigation.navigate('Edit Adoption')}>
                 <View style={{ marginBottom: 24 }}>
                   <Image
                     resizeMode="contain"

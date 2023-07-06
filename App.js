@@ -44,6 +44,8 @@ import AddVet from './screens/addVet';
 import ScheduleAppointment from './screens/scheduleAppointment';
 import SelectVet from './screens/selectVet';
 import ViewAppointment from './screens/viewAppointment';
+import EditAdoption from './screens/editAdoption';
+import EditPet from './screens/editPet';
 // const Drawer = createDrawerNavigator();
 
 // function MyDrawer() {
@@ -302,6 +304,8 @@ function App() {
           <Stack.Screen name="Add Vet" component={AddVet} />
           <Stack.Screen name="Select Vet" component={SelectVet} />
           <Stack.Screen name="View Appointments" component={ViewAppointment} />
+          <Stack.Screen name="Edit Adoption" component={EditAdoption} />
+          <Stack.Screen name="Edit Pet" component={EditPet} />
           <Stack.Screen
             name="Schedule Appointment"
             component={ScheduleAppointment}
